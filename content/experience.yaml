@@ -1,0 +1,49 @@
+# ============================================================================
+# Work Experience — every work entry (internship, full-time, part-time,
+# freelance, volunteer) lives in this single list, newest first.
+#
+# HOW TO ADD A NEW ENTRY:
+#   1. Copy the TEMPLATE block below.
+#   2. Fill in every field (delete optional ones you don't need).
+#   3. Paste it at the TOP of the real entries below (reverse-chronological).
+#   4. Drop a logo in public/images/experience/ if you have one.
+#   No page/template code needs to change — the Experience page renders
+#   whatever is in this list. See SPEC.md §7.3 / §7.5.
+# ============================================================================
+
+# --- TEMPLATE (copy, don't edit in place) ----------------------------------
+# - type: internship        # internship | full-time | part-time | freelance | volunteer
+#   role: "Role / Title"
+#   organization: "Organization Name"
+#   location: "City, Country"          # optional
+#   start_date: "YYYY-MM"
+#   end_date: "YYYY-MM"                # or "Present"
+#   bullets:
+#     - "Impact bullet 1"
+#     - "Impact bullet 2"
+#   tags: ["Skill1", "Skill2"]         # optional
+#   logo: "images/experience/org-slug.png"  # optional
+#   link: "https://example.com"        # optional
+#   project_link: "/projects/slug"     # optional, cross-link to a Projects detail page
+#   supervisor: "Name (Affiliation)"   # optional, common for research internships
+# -----------------------------------------------------------------------------
+
+# Source: content/internships.md (fuller detail than the one-line CV entry —
+# that file already has the real May–July timeline and the richest bullets).
+- type: internship
+  role: "Intern, Emergence AI"
+  organization: "Emergence AI"
+  location: "Bengaluru, India"
+  start_date: "2026-05"
+  end_date: "2026-07"
+  bullets:
+    - "Co-developed a formally verified system using the Lean 4 proof assistant to automatically check the structural correctness of claims made about Scalable Vector Graphics (SVG)."
+    - "Designed a restricted SVG dialect constraining geometry to exact integer coordinates with unique element identifiers, moving verification from approximate vision models toward exhaustively decidable logic."
+    - "Implemented a custom parser combinator in Lean 4 to convert raw SVG markup into a strongly typed document model."
+    - "Programmed geometric and logical predicates (intersection, containment, parallelism, area, pie-chart slice proportions) as decidable propositions over integer arithmetic."
+    - "Integrated a multimodal LLM (Gemini) to reconstruct raster images into dialect-conformant SVGs and translate natural-language claims into a structured JSON schema, so the system outputs a definite PASS/FAIL/ERROR verdict per claim."
+  tags: ["Lean 4", "Mathlib", "Formal Verification", "Python"]
+  logo: null   # TODO: add an Emergence AI logo if desired
+  link: null   # TODO: add Emergence AI's site if you want it linked
+  project_link: "/projects/verifythevector"
+  supervisor: "Prof. Siddhartha Gadgil (IISc)"

@@ -1,0 +1,136 @@
+---
+import Layout from '../components/Layout.astro';
+import { getExperience, getProjects } from '../lib/content';
+
+const base = import.meta.env.BASE_URL;
+const experience = getExperience();
+const projects = getProjects();
+const latestRole = experience[0];
+const featuredProject = projects.find((p) => p.featured) ?? projects[0];
+
+const email = 'sudarshanab@iisc.ac.in';
+
+const skillGroups = [
+  { label: 'Languages', items: ['Python'] },
+  { label: 'ML / DL', items: ['Machine Learning', 'Deep Learning foundations', 'PyTorch'] },
+  { label: 'Formal methods', items: ['Lean 4', 'Mathlib'] },
+  {
+    label: 'Math',
+    items: ['Linear Algebra', 'Probability & Statistics', 'Discrete Mathematics', 'Algebraic Structures'],
+  },
+];
+---
+
+<Layout
+  title="Sudarshana Chaitanya B N"
+  description="B.Tech student in Mathematics & Computing at IISc Bangalore, focused on machine learning, deep learning, and formal verification."
+  active="home"
+>
+  <!-- Hero -->
+  <section class="container">
+    <p class="eyebrow">Portfolio</p>
+    <h1>Sudarshana Chaitanya B N</h1>
+    <p style="font-size:1.15rem; max-width: 60ch;">
+      B.Tech student in Mathematics &amp; Computing at IISc Bangalore, focused on
+      machine learning, deep learning, and formal verification.
+    </p>
+    <div class="btn-row">
+      <a class="btn btn-primary" href={`mailto:${email}`}>Contact me</a>
+      <a class="btn btn-secondary" href={`${base}resume.pdf`} download>Download CV</a>
+    </div>
+  </section>
+
+  <!-- About -->
+  <section class="container">
+    <h2>About</h2>
+    <p style="max-width: 65ch;">
+      I'm a Mathematics &amp; Computing undergraduate at the Indian Institute of
+      Science (IISc), Bangalore, with a focus on machine learning and deep
+      learning foundations. My recent work spans formal verification of
+      visual/graphical claims using Lean 4 and the study of adversarial
+      robustness in deep neural networks. I enjoy problems that sit at the
+      intersection of rigorous mathematics and practical ML systems.
+    </p>
+    <p style="max-width: 65ch; color: var(--color-text-muted);">
+      <!-- TODO (see PLAN.md §6): this is the one line a CV can't answer —
+           what are you currently looking for? Internships, full-time roles,
+           research collaborations? Replace the bracketed text below. -->
+      [TODO: add what you're currently looking for — e.g. "currently looking
+      for research internships in ML/formal methods for Summer 2027."]
+    </p>
+  </section>
+
+  <!-- Skills -->
+  <section class="container">
+    <h2>Skills</h2>
+    <div class="card-grid">
+      {
+        skillGroups.map((group) => (
+          <div class="card">
+            <h3>{group.label}</h3>
+            <ul class="tag-list">
+              {group.items.map((item) => (
+                <li>{item}</li>
+              ))}
+            </ul>
+          </div>
+        ))
+      }
+    </div>
+  </section>
+
+  <!-- Highlights -->
+  <section class="container">
+    <h2>Highlights</h2>
+    <div class="card-grid">
+      {
+        latestRole && (
+          <div class="card">
+            <span class="badge">Experience</span>
+            <h3>{latestRole.role} — {latestRole.organization}</h3>
+            <p>{latestRole.bullets[0]}</p>
+            <p class="meta">
+              <a href={`${base}experience`}>See all experience →</a>
+            </p>
+          </div>
+        )
+      }
+      {
+        featuredProject && (
+          <div class="card">
+            <span class="badge badge-featured">Project</span>
+            <h3>{featuredProject.title}</h3>
+            <p>{featuredProject.summary}</p>
+            <p class="meta">
+              <a href={`${base}projects/${featuredProject.slug}`}>See all projects →</a>
+            </p>
+          </div>
+        )
+      }
+    </div>
+  </section>
+
+  <!-- Extracurriculars -->
+  <section class="container">
+    <h2>Extracurriculars</h2>
+    <ul class="bullets">
+      <li>Convener, IISc Gymkhana Cricket Club — leading the club, organizing activities, and playing as an active cricketer.</li>
+      <li>Mess Secretary (2024–2025) — managed and coordinated mess operations, logistics, and student concerns for a full year.</li>
+      <li>Core Member, Databased (undergraduate club) — 2025.</li>
+      <li>Event Volunteer, IISc Open Day (2025, 2026) — conducted a seminar on Chaotic Systems (2026) and demonstrated Semaphore-based systems (2025).</li>
+      <li>Attended the Leanlang for Programming summer school at IISc (July 6–10, 2026).</li>
+    </ul>
+  </section>
+
+  <!-- Contact -->
+  <section class="container" id="contact">
+    <h2>Contact</h2>
+    <p>
+      Email: <a href={`mailto:${email}`}>{email}</a>
+    </p>
+    <div class="btn-row">
+      <a class="btn btn-primary" href={`mailto:${email}`}>Contact me</a>
+      <a class="btn btn-secondary" href={`${base}resume.pdf`} download>Download CV</a>
+    </div>
+  </section>
+</Layout>

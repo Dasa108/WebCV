@@ -1,0 +1,362 @@
+/* ============================================================================
+   Palette — Naruto-inspired, per SPEC.md §9.1. Light mode is the :root
+   default; dark mode overrides via prefers-color-scheme (SPEC §9.3).
+   ========================================================================= */
+:root {
+  /* accents */
+  --color-accent: #e8611c; /* Naruto Orange — the one recurring brand color */
+  --color-accent-hover: #c74c10; /* Deep Orange */
+  --color-accent-2: #5b8c5a; /* Konoha Leaf Green — sparing use */
+  --color-accent-rare: #b23a2e; /* Sharingan Red — rare/featured use only */
+  --color-steel: #9ca3af; /* Headband Steel — dividers/borders */
+
+  /* base pair: light mode */
+  --color-bg: #fbf6ee; /* Scroll Cream */
+  --color-surface: #ffffff; /* Warm White */
+  --color-text: #232323; /* Ink */
+  --color-text-muted: #5b5b5b;
+  --color-border: #e7ded0;
+
+  --color-on-accent: #fbf6ee; /* text placed on top of the orange accent */
+
+  --font-heading: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-body: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+
+  --radius: 12px;
+  --shadow: 0 1px 3px rgba(27, 31, 42, 0.08), 0 1px 2px rgba(27, 31, 42, 0.06);
+  --shadow-hover: 0 8px 24px rgba(27, 31, 42, 0.12);
+
+  --container-width: 1080px;
+  --space-1: 0.5rem;
+  --space-2: 1rem;
+  --space-3: 1.5rem;
+  --space-4: 2.5rem;
+  --space-5: 4rem;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    /* base pair: dark mode — Shinobi Navy background, Deep Slate surfaces */
+    --color-bg: #1b1f2a;
+    --color-surface: #242938;
+    --color-text: #edeae3; /* Off-White */
+    --color-text-muted: #a9adb8;
+    --color-border: #333a4c;
+    --shadow: 0 1px 3px rgba(0, 0, 0, 0.35), 0 1px 2px rgba(0, 0, 0, 0.3);
+    --shadow-hover: 0 8px 24px rgba(0, 0, 0, 0.45);
+    /* accent orange stays the same in both modes, per SPEC §9.3 */
+  }
+}
+
+/* ============================================================================
+   Reset + base
+   ========================================================================= */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-body);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+a {
+  color: var(--color-accent);
+  text-decoration: none;
+}
+a:hover {
+  color: var(--color-accent-hover);
+  text-decoration: underline;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-family: var(--font-heading);
+  line-height: 1.2;
+  margin: 0 0 var(--space-2);
+}
+h1 {
+  font-size: clamp(2rem, 4vw + 1rem, 3rem);
+}
+h2 {
+  font-size: clamp(1.5rem, 2vw + 1rem, 2.1rem);
+}
+h3 {
+  font-size: 1.25rem;
+}
+p {
+  margin: 0 0 var(--space-2);
+  color: var(--color-text);
+}
+
+.container {
+  width: 100%;
+  max-width: var(--container-width);
+  margin-inline: auto;
+  padding-inline: var(--space-3);
+}
+
+section {
+  padding-block: var(--space-5);
+}
+section + section {
+  border-top: 1px solid var(--color-border);
+}
+
+.eyebrow {
+  color: var(--color-accent);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-size: 0.8rem;
+  margin-bottom: var(--space-1);
+}
+
+/* ============================================================================
+   Nav (SPEC §7.1) — persistent, current page in accent orange
+   ========================================================================= */
+.site-nav {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background: color-mix(in srgb, var(--color-bg) 92%, transparent);
+  backdrop-filter: saturate(140%) blur(8px);
+  border-bottom: 1px solid var(--color-border);
+}
+.site-nav .container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-block: var(--space-2);
+}
+.site-nav .brand {
+  font-weight: 800;
+  color: var(--color-text);
+  font-size: 1.1rem;
+}
+.site-nav .brand:hover {
+  color: var(--color-text);
+  text-decoration: none;
+}
+.site-nav ul {
+  list-style: none;
+  display: flex;
+  gap: var(--space-3);
+  margin: 0;
+  padding: 0;
+}
+.site-nav a.nav-link {
+  color: var(--color-text);
+  font-weight: 600;
+  padding: 0.4rem 0.1rem;
+  border-bottom: 2px solid transparent;
+}
+.site-nav a.nav-link:hover {
+  color: var(--color-accent);
+  text-decoration: none;
+}
+.site-nav a.nav-link[aria-current='page'] {
+  color: var(--color-accent);
+  border-bottom-color: var(--color-accent);
+}
+.nav-toggle {
+  display: none;
+}
+
+/* ============================================================================
+   Buttons
+   ========================================================================= */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.7rem 1.3rem;
+  border-radius: 999px;
+  font-weight: 700;
+  border: 2px solid transparent;
+  cursor: pointer;
+  min-height: 44px; /* tap-target size, SPEC §8.1 */
+}
+.btn:hover {
+  text-decoration: none;
+}
+.btn-primary {
+  background: var(--color-accent);
+  color: var(--color-on-accent);
+}
+.btn-primary:hover {
+  background: var(--color-accent-hover);
+  color: var(--color-on-accent);
+}
+.btn-secondary {
+  background: transparent;
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+}
+.btn-secondary:hover {
+  background: var(--color-accent);
+  color: var(--color-on-accent);
+}
+.btn-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+/* ============================================================================
+   Cards (shared by Experience + Project entries, SPEC §9.2)
+   ========================================================================= */
+.card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: var(--space-3);
+  transition: box-shadow 0.15s ease, transform 0.15s ease;
+}
+a.card {
+  display: block;
+  color: var(--color-text);
+}
+a.card:hover {
+  box-shadow: var(--shadow-hover);
+  transform: translateY(-2px);
+  text-decoration: none;
+  color: var(--color-text);
+}
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: var(--space-3);
+}
+.card-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.badge {
+  display: inline-block;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--color-accent-2) 18%, transparent);
+  color: var(--color-accent-2);
+}
+.badge-featured {
+  background: color-mix(in srgb, var(--color-accent-rare) 18%, transparent);
+  color: var(--color-accent-rare);
+}
+
+.tag-list {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin: var(--space-1) 0 0;
+  padding: 0;
+}
+.tag-list li {
+  font-size: 0.8rem;
+  padding: 0.15rem 0.55rem;
+  border-radius: 999px;
+  border: 1px solid var(--color-border);
+  color: var(--color-text-muted);
+}
+
+.meta {
+  color: var(--color-text-muted);
+  font-size: 0.9rem;
+  margin: 0.15rem 0 var(--space-2);
+}
+
+.bullets {
+  margin: 0;
+  padding-left: 1.1rem;
+}
+.bullets li {
+  margin-bottom: 0.35rem;
+}
+
+/* ============================================================================
+   Footer
+   ========================================================================= */
+.site-footer {
+  border-top: 1px solid var(--color-border);
+  padding-block: var(--space-3);
+  color: var(--color-text-muted);
+  font-size: 0.9rem;
+}
+.site-footer .container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  align-items: center;
+  justify-content: space-between;
+}
+.site-footer ul {
+  list-style: none;
+  display: flex;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+}
+
+/* ============================================================================
+   Responsive breakpoints — SPEC §8.1
+   ========================================================================= */
+@media (max-width: 768px) {
+  .site-nav ul {
+    gap: var(--space-2);
+  }
+}
+
+@media (max-width: 480px) {
+  .site-nav ul {
+    gap: var(--space-1);
+    font-size: 0.85rem;
+  }
+  section {
+    padding-block: var(--space-4);
+  }
+  .btn-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+
+/* Skip-to-content link for keyboard/screen-reader users (SPEC §8.3) */
+.skip-link {
+  position: absolute;
+  left: -999px;
+  top: auto;
+  background: var(--color-accent);
+  color: var(--color-on-accent);
+  padding: 0.75rem 1rem;
+  z-index: 100;
+  border-radius: 0 0 8px 0;
+}
+.skip-link:focus {
+  left: 0;
+  top: 0;
+}

@@ -1,0 +1,77 @@
+---
+import Layout from '../../components/Layout.astro';
+import { getProjects, formatMonthYear } from '../../lib/content';
+
+export function getStaticPaths() {
+  return getProjects().map((project) => ({
+    params: { slug: project.slug },
+    props: { project },
+  }));
+}
+
+const { project } = Astro.props;
+const base = import.meta.env.BASE_URL;
+
+const linkLabels: Record<string, string> = {
+  repo: 'Code (GitHub)',
+  demo: 'Live demo',
+  report: 'Full report (PDF)',
+  slides: 'Slides (PDF)',
+};
+// repo/demo are external URLs; report/slides are paths into public/documents/
+// (relative, no leading slash) and need the base path prefixed to resolve
+// correctly under GitHub Pages' /WebCV/ subpath.
+const internalLinkKeys = new Set(['report', 'slides']);
+const availableLinks = (
+  Object.entries(project.links).filter(([, url]) => !!url) as [keyof typeof linkLabels, string][]
+).map(([key, url]) => [key, internalLinkKeys.has(key) ? `${base}${url}` : url] as const);
+---
+
+<Layout
+  title={`${project.title} — Sudarshana Chaitanya B N`}
+  description={project.summary}
+  active="projects"
+>
+  <section class="container">
+    <a href={`${base}projects`}>← All projects</a>
+
+    <p class="eyebrow">Project{project.date && <> · {formatMonthYear(project.date)}</>}</p>
+    {project.featured && <span class="badge badge-featured">Featured</span>}
+    <h1>{project.title}</h1>
+    <p style="font-size: 1.1rem; max-width: 65ch;">{project.summary}</p>
+
+    <ul class="tag-list">
+      {project.tech_stack.map((tech) => (
+        <li>{tech}</li>
+      ))}
+    </ul>
+
+    {project.thumbnail && (
+      <img
+        src={`${base}${project.thumbnail}`}
+        alt={`Screenshot / diagram for ${project.title}`}
+        style="margin-top: var(--space-3); border-radius: var(--radius); border: 1px solid var(--color-border);"
+      />
+    )}
+
+    {project.description && (
+      <p style="max-width: 65ch; margin-top: var(--space-3);">{project.description}</p>
+    )}
+
+    {project.outcome && (
+      <p class="meta" style="max-width: 65ch;">
+        <strong>Outcome:</strong> {project.outcome}
+      </p>
+    )}
+
+    {availableLinks.length > 0 && (
+      <div class="btn-row" style="margin-top: var(--space-3);">
+        {availableLinks.map(([key, url]) => (
+          <a class="btn btn-secondary" href={url} target="_blank" rel="noopener noreferrer">
+            {linkLabels[key] ?? key} ↗
+          </a>
+        ))}
+      </div>
+    )}
+  </section>
+</Layout>

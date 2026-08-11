@@ -1,0 +1,23 @@
+---
+import type { ProjectEntry } from '../lib/content';
+
+interface Props {
+  project: ProjectEntry;
+}
+const { project } = Astro.props;
+const base = import.meta.env.BASE_URL;
+---
+
+<a class="card" href={`${base}projects/${project.slug}`}>
+  {project.featured && <span class="badge badge-featured">Featured</span>}
+  <h3>{project.title}</h3>
+  <p>{project.summary}</p>
+
+  <ul class="tag-list">
+    {project.tech_stack.map((tech) => (
+      <li>{tech}</li>
+    ))}
+  </ul>
+
+  {project.outcome && <p class="meta">{project.outcome}</p>}
+</a>

@@ -1,0 +1,26 @@
+---
+import Layout from '../components/Layout.astro';
+import ExperienceCard from '../components/ExperienceCard.astro';
+import { getExperience } from '../lib/content';
+
+const experience = getExperience();
+---
+
+<Layout
+  title="Experience — Sudarshana Chaitanya B N"
+  description="Work experience — internships, roles, and research positions."
+  active="experience"
+>
+  <section class="container">
+    <p class="eyebrow">Work Experience</p>
+    <h1>Experience</h1>
+    <p style="max-width: 60ch; color: var(--color-text-muted);">
+      Every internship, job, or research position lives in this one
+      reverse-chronological list.
+    </p>
+
+    <div class="card-list" style="margin-top: var(--space-3);">
+      {experience.map((entry) => <ExperienceCard entry={entry} />)}
+    </div>
+  </section>
+</Layout>

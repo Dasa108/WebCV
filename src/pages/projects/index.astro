@@ -1,0 +1,26 @@
+---
+import Layout from '../../components/Layout.astro';
+import ProjectCard from '../../components/ProjectCard.astro';
+import { getProjects } from '../../lib/content';
+
+const projects = getProjects();
+---
+
+<Layout
+  title="Projects — Sudarshana Chaitanya B N"
+  description="Projects — formal verification, machine learning, and more."
+  active="projects"
+>
+  <section class="container">
+    <p class="eyebrow">Projects</p>
+    <h1>Projects</h1>
+    <p style="max-width: 60ch; color: var(--color-text-muted);">
+      Featured projects first, then newest first. Click a card for the full
+      writeup, tech stack, and links.
+    </p>
+
+    <div class="card-grid" style="margin-top: var(--space-3);">
+      {projects.map((project) => <ProjectCard project={project} />)}
+    </div>
+  </section>
+</Layout>

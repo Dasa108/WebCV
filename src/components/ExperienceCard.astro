@@ -1,0 +1,51 @@
+---
+import { formatMonthYear, type ExperienceEntry } from '../lib/content';
+
+interface Props {
+  entry: ExperienceEntry;
+}
+const { entry } = Astro.props;
+const base = import.meta.env.BASE_URL;
+
+const typeLabel: Record<ExperienceEntry['type'], string> = {
+  internship: 'Internship',
+  'full-time': 'Full-time',
+  'part-time': 'Part-time',
+  freelance: 'Freelance',
+  volunteer: 'Volunteer',
+};
+---
+
+<article class="card">
+  <span class="badge">{typeLabel[entry.type]}</span>
+  <h3>{entry.role} — {entry.organization}</h3>
+  <p class="meta">
+    {formatMonthYear(entry.start_date)} – {formatMonthYear(entry.end_date)}
+    {entry.location && <> · {entry.location}</>}
+    {entry.supervisor && <> · Supervised by {entry.supervisor}</>}
+  </p>
+
+  <ul class="bullets">
+    {entry.bullets.map((bullet) => <li>{bullet}</li>)}
+  </ul>
+
+  {
+    entry.tags && entry.tags.length > 0 && (
+      <ul class="tag-list">
+        {entry.tags.map((tag) => (
+          <li>{tag}</li>
+        ))}
+      </ul>
+    )
+  }
+
+  <p class="meta">
+    {entry.link && (
+      <a href={entry.link} target="_blank" rel="noopener noreferrer">
+        Organization site ↗
+      </a>
+    )}
+    {entry.link && entry.project_link && ' · '}
+    {entry.project_link && <a href={`${base}${entry.project_link.replace(/^\//, '')}`}>See the project →</a>}
+  </p>
+</article>
