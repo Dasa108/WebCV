@@ -7,6 +7,10 @@ was built that way instead of some other way**, and **what actually broke
 along the way** (which tends to be the most interesting part of any
 interview answer).
 
+New terms are linked the first time they show up — click through if
+something's unfamiliar rather than getting stuck on it. §12 at the bottom
+also collects every link in one table for quick reference.
+
 Companion docs: [`SPEC.md`](./SPEC.md) is the requirements doc (what the
 site must do). [`PLAN.md`](./PLAN.md) is the execution tracker (what's
 done, what's still open). This doc is the "how it's built and why."
@@ -15,15 +19,17 @@ done, what's still open). This doc is the "how it's built and why."
 
 ## 1. The 30-second pitch
 
-> "It's a personal portfolio site built with Astro, a static site
-> generator. Content — my CV, work experience, and projects — lives as
-> plain YAML/Markdown files, completely separate from the page code. At
-> build time, Astro reads that data and pre-renders every page to plain
-> HTML/CSS, which gets deployed to GitHub Pages via a GitHub Actions
-> pipeline that runs automatically on every push. Because content and
-> code are separate, adding a new project or job later means editing one
-> YAML file — no HTML, no redesign, no redeploy button to remember to
-> press."
+> "It's a personal portfolio site built with [Astro](https://astro.build),
+> a [static site generator](https://www.cloudflare.com/learning/performance/static-site-generator/).
+> Content — my CV, work experience, and projects — lives as plain
+> [YAML](https://yaml.org)/Markdown files, completely separate from the
+> page code. At build time, Astro reads that data and pre-renders every
+> page to plain HTML/CSS, which gets deployed to
+> [GitHub Pages](https://docs.github.com/en/pages) via a
+> [GitHub Actions](https://docs.github.com/en/actions) pipeline that runs
+> automatically on every push. Because content and code are separate,
+> adding a new project or job later means editing one YAML file — no
+> HTML, no redesign, no redeploy button to remember to press."
 
 If you remember only one sentence from this document, remember that one —
 it answers "walk me through your project" in one breath and naturally
@@ -53,11 +59,12 @@ dist/*.html + dist/_astro/*.css  ──►  GitHub Actions  ──►  GitHub Pa
 Two things to internalize here, because they come up in almost every
 follow-up question:
 
-1. **Everything happens at build time, not at request time.** There is no
-   server that runs when someone visits the site. `astro build` runs once
-   (in GitHub's CI runner, not in the visitor's browser), produces plain
-   HTML/CSS files, and those files are what gets hosted. This is called
-   **static site generation (SSG)** — see the glossary if that term is new.
+1. **Everything happens at [build time, not at request time](https://vercel.com/guides/what-is-the-difference-between-build-time-and-runtime).**
+   There is no server that runs when someone visits the site. `astro build`
+   runs once (in GitHub's CI runner, not in the visitor's browser),
+   produces plain HTML/CSS files, and those files are what gets hosted.
+   This is called **[static site generation (SSG)](https://www.cloudflare.com/learning/performance/static-site-generator/)**
+   — see the glossary if that term is new.
 2. **Content and code are two different layers that only meet at build
    time.** `content/*.yaml` doesn't know anything about HTML. `src/pages/
    *.astro` doesn't know anything about *this specific* internship or
@@ -73,9 +80,10 @@ follow-up question:
 **The problem to solve:** almost all of this site's content changes
 rarely (my CV doesn't change daily) and there's no user login, no
 database, no server-side logic — it's fundamentally a document, not an
-application. Serving a full JavaScript app (React/Next.js client-rendered)
-for that is solving a problem I don't have, at the cost of a slower first
-load and more moving parts.
+application. Serving a full JavaScript app
+([React](https://react.dev)/[Next.js](https://nextjs.org)
+client-rendered) for that is solving a problem I don't have, at the cost
+of a slower first load and more moving parts.
 
 **The three real options I weighed** (this is recorded as a decision in
 `SPEC.md` §11):
@@ -83,23 +91,25 @@ load and more moving parts.
 | Option | What it is | Why not chosen |
 |---|---|---|
 | Plain HTML/CSS/JS, no build step | Hand-write every page | No templating — adding a project means copy-pasting a whole card's HTML by hand, every time. Doesn't scale (this was the explicit requirement from `PLAN.md`). |
-| React / Next.js | Full JS framework, client + server rendering | Overkill for a mostly-static content site; ships a JS framework runtime to the browser for pages that don't need interactivity. |
-| **Astro** (chosen) | Static site generator with component templating | Renders to plain HTML at build time (fast, simple hosting), but still lets you write reusable components and loop over data — the templating power of React without shipping React to the browser. |
+| [React](https://react.dev) / [Next.js](https://nextjs.org) | Full JS framework, client + server rendering | Overkill for a mostly-static content site; ships a JS framework runtime to the browser for pages that don't need interactivity. |
+| **[Astro](https://astro.build)** (chosen) | Static site generator with component templating | Renders to plain HTML at build time (fast, simple hosting), but still lets you write reusable components and loop over data — the templating power of React without shipping React to the browser. |
 
 **What "static site generator" means, concretely:** a program that takes
 templates + data and produces `.html` files *before* anyone visits the
 site, instead of generating HTML on-the-fly for each visitor (that's
-"server-side rendering") or in the visitor's browser with JavaScript
-(that's a "single-page app" / client-side rendering). Astro's default mode
-— which this project uses explicitly (`output: 'static'` in
-`astro.config.mjs`) — is SSG: build once, serve static files forever,
-until the next build.
+**[server-side rendering (SSR)](https://developer.mozilla.org/en-US/docs/Glossary/SSR)**)
+or in the visitor's browser with JavaScript (that's a
+**[single-page app / client-side rendering](https://developer.mozilla.org/en-US/docs/Glossary/SPA)**).
+Astro's default mode — which this project uses explicitly
+(`output: 'static'` in [`astro.config.mjs`](https://docs.astro.build/en/reference/configuration-reference/))
+— is SSG: build once, serve static files forever, until the next build.
 
 **Why that's a good fit here:** static files are the simplest, cheapest,
-fastest thing to host — a CDN can cache them forever, there's no server to
-crash or patch, and GitHub Pages hosts them for free. The tradeoff (you
-have to rebuild to see new content) is a non-issue because publishing a
-new build is automatic (§7) — it just takes a `git push`.
+fastest thing to host — a **[CDN](https://developer.mozilla.org/en-US/docs/Glossary/CDN)**
+can cache them forever, there's no server to crash or patch, and GitHub
+Pages hosts them for free. The tradeoff (you have to rebuild to see new
+content) is a non-issue because publishing a new build is automatic (§7)
+— it just takes a `git push`.
 
 ---
 
@@ -107,8 +117,8 @@ new build is automatic (§7) — it just takes a `git push`.
 
 This is the single most important design decision in the project, and the
 one most worth being able to explain well, because it's a *general*
-software design principle (separation of data from presentation), not
-just an Astro trick.
+software design principle ([separation of concerns](https://en.wikipedia.org/wiki/Separation_of_concerns)
+— data separate from presentation), not just an Astro trick.
 
 **The requirement** (from `PLAN.md` §3): adding a new internship or
 project later should mean editing **one file**, never touching page
@@ -121,9 +131,12 @@ templates or CSS.
   organization, some bullet points, some tags. Nothing in these files
   knows about HTML, colors, or layout.
 - `src/lib/content.ts` is the *only* code that touches these files. It
-  reads them with Node's filesystem API (`node:fs`) and parses them with
-  the `js-yaml` library, and exposes typed functions: `getExperience()`,
-  `getProjects()`, `getProjectBySlug(slug)`.
+  reads them with [Node's](https://nodejs.org) filesystem API
+  (`node:fs`) and parses them with the
+  [`js-yaml`](https://www.npmjs.com/package/js-yaml) library, and exposes
+  typed functions ([TypeScript](https://www.typescriptlang.org) gives the
+  "typed" part): `getExperience()`, `getProjects()`,
+  `getProjectBySlug(slug)`.
 - The page templates (`src/pages/*.astro`) call those functions and loop
   over whatever comes back — they render "however many entries exist,"
   never "these specific N entries."
@@ -137,25 +150,28 @@ know how many projects there are.
 **Why YAML and not, say, a database or a CMS?**
 - A database needs a server to run and a network call to query — pure
   overkill for a few dozen KB of text that changes maybe once a month.
-- A headless CMS (Contentful, Sanity, etc.) adds an external account,
-  an API key, and a network dependency for content that's really just...
-  my own text files. YAML in the same git repo means the content is
+- A [headless CMS](https://www.contentful.com/r/knowledgebase/headless-cms/)
+  (like [Contentful](https://www.contentful.com) or
+  [Sanity](https://www.sanity.io)) adds an external account, an API key,
+  and a network dependency for content that's really just... my own text
+  files. YAML in the same git repo means the content is
   version-controlled, diffable, and requires no third-party service.
-- YAML specifically (over JSON) because it supports comments — which is
-  what makes the in-file `TEMPLATE` block and field-by-field explanations
-  possible. That "self-documenting schema" is what makes it usable by
-  someone (future me) who doesn't remember the exact field names months
-  later.
+- YAML specifically (over [JSON](https://www.json.org)) because it
+  supports comments — which is what makes the in-file `TEMPLATE` block
+  and field-by-field explanations possible. That "self-documenting
+  schema" is what makes it usable by someone (future me) who doesn't
+  remember the exact field names months later.
 
-**Why not Astro's built-in "Content Collections" feature**, which is the
-idiomatic way most Astro tutorials handle this? Content Collections expect
-one file per entry, living inside `src/content/`. I deliberately kept the
-existing "one list file per type" shape instead, for two reasons: (1) it's
-simpler to reason about — "everything is in this one file" vs. "there's a
-new file per entry plus a schema file," and (2) the whole point of a
-scratch-built loader (`content.ts`) is full control — no framework
-"magic" between the YAML and what actually renders, which makes debugging
-straightforward (it's just a function call you can `console.log`).
+**Why not Astro's built-in "[Content Collections](https://docs.astro.build/en/guides/content-collections/)"
+feature**, which is the idiomatic way most Astro tutorials handle this?
+Content Collections expect one file per entry, living inside
+`src/content/`. I deliberately kept the existing "one list file per type"
+shape instead, for two reasons: (1) it's simpler to reason about —
+"everything is in this one file" vs. "there's a new file per entry plus a
+schema file," and (2) the whole point of a scratch-built loader
+(`content.ts`) is full control — no framework "magic" between the YAML
+and what actually renders, which makes debugging straightforward (it's
+just a function call you can `console.log`).
 
 ---
 
@@ -197,8 +213,9 @@ WebCV/
 **One subtlety worth explaining if asked: why is there both `content/` and
 `public/`?** They look similar (both hold "data") but serve opposite
 purposes:
-- `public/` is copied **verbatim** into the deployed site — anything in
-  here gets its own URL (`public/resume.pdf` → `/WebCV/resume.pdf`).
+- [`public/`](https://docs.astro.build/en/basics/project-structure/#public)
+  is copied **verbatim** into the deployed site — anything in here gets
+  its own URL (`public/resume.pdf` → `/WebCV/resume.pdf`).
 - `content/` is **never** copied to the deployed site — it's read at
   build time by `content.ts`, turned into HTML, and the original files
   stay private to the repo. This is *deliberate*: the raw PDFs and prose
@@ -224,54 +241,67 @@ function loadYamlList<T>(filename: string): T[] {
 }
 ```
 
-This is plain Node.js: read a file as text, parse it, sanity-check the
-shape (fail loudly at build time if someone breaks the YAML, rather than
-silently rendering a blank page). `getExperience()` and `getProjects()`
-wrap this with the specific filename and a TypeScript type, so every page
-that imports them gets autocomplete and type errors if a field is
-misspelled.
+This is plain [Node.js](https://nodejs.org): read a file as text, parse
+it, sanity-check the shape (fail loudly at build time if someone breaks
+the YAML, rather than silently rendering a blank page). `getExperience()`
+and `getProjects()` wrap this with the specific filename and a
+[TypeScript](https://www.typescriptlang.org/docs/handbook/2/basic-types.html)
+type, so every page that imports them gets autocomplete and type errors
+if a field is misspelled.
 
 `getProjects()` also does the one piece of real logic in this file:
 sorting — featured projects first, then newest-by-date. That logic lives
 here, once, instead of being duplicated in every page that lists
-projects — another instance of the same "single source of truth"
+projects — another instance of the same
+"[single source of truth](https://en.wikipedia.org/wiki/Single_source_of_truth)"
 principle from §4, just applied to *behavior* instead of *data*.
 
 `formatMonthYear()` turns `"2026-07"` into `"Jul 2026"` for display,
-using the browser/Node built-in `Intl`-backed `toLocaleDateString`, so
-dates are stored in a sortable/parseable machine format (`YYYY-MM`) in the
-YAML but shown in a human-readable format on the page — another small
-separation of "data representation" from "display representation."
+using the built-in
+[`Intl`-backed `toLocaleDateString`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/toLocaleDateString),
+so dates are stored in a sortable/parseable machine format (`YYYY-MM`) in
+the YAML but shown in a human-readable format on the page — another
+small separation of "data representation" from "display representation."
 
 ### 6.2 `src/components/` — Layout, Nav, Footer, Cards
 
-- **`Layout.astro`** is the page shell every page wraps itself in: it
-  emits the `<html>`/`<head>` boilerplate once (meta tags, favicon, Open
-  Graph tags for link previews, canonical URL for SEO — see the "SEO"
-  entry in the glossary if unfamiliar), then renders `<Nav>`, `<slot />`
+- **[`Layout.astro`](https://docs.astro.build/en/basics/layouts/)** is
+  the page shell every page wraps itself in: it emits the
+  `<html>`/`<head>` boilerplate once (meta tags, favicon,
+  [Open Graph tags](https://ogp.me) for link previews,
+  [canonical URL](https://developers.google.com/search/docs/crawling-indexing/consolidate-duplicate-urls)
+  for [SEO](https://developer.mozilla.org/en-US/docs/Glossary/SEO) — see
+  the "SEO" entry in the glossary if unfamiliar), then renders `<Nav>`,
+  [`<slot />`](https://docs.astro.build/en/basics/astro-components/#slots)
   (where the page's own content goes), then `<Footer>`. Every page passes
   it a `title`, `description`, and which nav item is "active."
-- **`Nav.astro`** builds its links from `import.meta.env.BASE_URL` rather
-  than hardcoding `/WebCV/...` — so the same code works whether the site
-  is deployed at a subpath (GitHub Pages) or the domain root (if it ever
-  moves to a custom domain). It marks the current page with
-  `aria-current="page"` (an accessibility attribute screen readers
-  announce, which also happens to be what the CSS uses to draw the
-  orange underline).
+- **`Nav.astro`** builds its links from
+  [`import.meta.env.BASE_URL`](https://docs.astro.build/en/guides/environment-variables/)
+  rather than hardcoding `/WebCV/...` — so the same code works whether
+  the site is deployed at a subpath (GitHub Pages) or the domain root (if
+  it ever moves to a custom domain). It marks the current page with
+  [`aria-current="page"`](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-current)
+  (an [accessibility](https://developer.mozilla.org/en-US/docs/Web/Accessibility)
+  attribute screen readers announce, which also happens to be what the
+  CSS uses to draw the orange underline).
 - **`ExperienceCard.astro`** / **`ProjectCard.astro`** each take one
-  entry (the TypeScript types from `content.ts`) as a prop and render it.
-  They don't know or care how many times they're used — the pages loop
-  and call them once per entry (§6.3).
+  entry (the TypeScript types from `content.ts`) as a
+  [prop](https://docs.astro.build/en/basics/astro-components/#component-props)
+  and render it. They don't know or care how many times they're used —
+  the pages loop and call them once per entry (§6.3).
 
 ### 6.3 `src/pages/` — file-based routing, and the dynamic-route trick
 
-In Astro (like Next.js), **the file path *is* the URL** — no separate
-router config. `src/pages/experience.astro` is served at `/experience`.
+In Astro (like Next.js), **[the file path *is* the URL](https://docs.astro.build/en/guides/routing/)**
+— no separate router config. `src/pages/experience.astro` is served at
+`/experience`.
 
 The interesting one is `src/pages/projects/[slug].astro` — the square
-brackets mean "this is a dynamic route; the value in `[slug]` comes from
-data, not a fixed filename." It exports a function called
-`getStaticPaths()`:
+brackets mean "this is a
+[dynamic route](https://docs.astro.build/en/guides/routing/#dynamic-routes);
+the value in `[slug]` comes from data, not a fixed filename." It exports
+a function called
+[`getStaticPaths()`](https://docs.astro.build/en/reference/routing-reference/#getstaticpaths):
 
 ```ts
 export function getStaticPaths() {
@@ -298,8 +328,10 @@ because it's the direct mechanism behind "one YAML entry = one live page."
 
 The palette (Naruto-inspired: orange primary accent, navy/cream base
 pair, sparing green/red accents — the exact colors and their reasoning
-are in `SPEC.md` §9.1) is implemented as **CSS custom properties** (a.k.a.
-CSS variables), not hardcoded hex values scattered through the stylesheet:
+are in `SPEC.md` §9.1) is implemented as
+**[CSS custom properties](https://developer.mozilla.org/en-US/docs/Web/CSS/Using_CSS_custom_properties)**
+(a.k.a. CSS variables), not hardcoded hex values scattered through the
+stylesheet:
 
 ```css
 :root {
@@ -319,34 +351,43 @@ CSS variables), not hardcoded hex values scattered through the stylesheet:
 ```
 
 Every component then uses `var(--color-bg)` etc. instead of a literal
-color. This is called a **design-token system**: define each color/size
-*once*, by role ("background," "accent," "border") rather than by value,
-then reference the role everywhere. The payoff is exactly what happens
-above — dark mode is a ~10-line override block, not a second copy of every
-color rule, because only the *tokens* change; every rule that uses
-`var(--color-bg)` picks up the new value automatically. This also
-respects the visitor's OS-level light/dark preference automatically via
-the `prefers-color-scheme` media query, with no toggle button or
-JavaScript required.
+color. This is called a
+**[design-token system](https://m3.material.io/foundations/design-tokens/overview)**:
+define each color/size *once*, by role ("background," "accent," "border")
+rather than by value, then reference the role everywhere. The payoff is
+exactly what happens above — dark mode is a ~10-line override block, not
+a second copy of every color rule, because only the *tokens* change;
+every rule that uses `var(--color-bg)` picks up the new value
+automatically. This also respects the visitor's OS-level light/dark
+preference automatically via the
+[`prefers-color-scheme`](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-color-scheme)
+[media query](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_media_queries),
+with no toggle button or JavaScript required.
 
-Responsiveness follows the same "define once" instinct: layout uses CSS
-Grid/Flexbox with relative sizing (`grid-template-columns: repeat(auto-fill,
+Responsiveness follows the same "define once" instinct: layout uses
+[CSS Grid](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_grid_layout)/[Flexbox](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_flexible_box_layout)
+with relative sizing (`grid-template-columns: repeat(auto-fill,
 minmax(280px, 1fr))` for card grids — "as many 280px+ columns as fit,"
 which reflows from a multi-column grid on desktop to a single column on
 phones with no media query needed) plus two breakpoints (`480px`, `768px`)
 for the handful of things that need explicit adjustment (nav spacing,
-button stacking). `clamp()` is used for heading sizes so text scales
-smoothly between a minimum and maximum instead of jumping at breakpoints.
+button stacking).
+[`clamp()`](https://developer.mozilla.org/en-US/docs/Web/CSS/clamp) is
+used for heading sizes so text scales smoothly between a minimum and
+maximum instead of jumping at breakpoints. This general approach is
+called [responsive web design](https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/CSS_layout/Responsive_Design).
 
 ---
 
 ## 7. CI/CD: how a `git push` becomes a live website
 
-**CI/CD** = Continuous Integration / Continuous Deployment: instead of
-manually running a build and manually uploading files whenever something
-changes, a pipeline runs automatically and does it for you, consistently,
-every time. Here that pipeline is a **GitHub Actions workflow**, defined
-in `.github/workflows/deploy.yml`.
+**[CI/CD](https://github.com/resources/articles/software-development/what-is-ci-cd)**
+= Continuous Integration / Continuous Deployment: instead of manually
+running a build and manually uploading files whenever something changes,
+a pipeline runs automatically and does it for you, consistently, every
+time. Here that pipeline is a
+**[GitHub Actions](https://docs.github.com/en/actions) workflow**,
+defined in `.github/workflows/deploy.yml`.
 
 ```yaml
 on:
@@ -382,10 +423,11 @@ runs `needs: build` — i.e., if the build fails (a broken YAML file, a
 typo in a component), deploy never runs and the previously-published site
 stays live. Nothing broken ever gets automatically published.
 
-`npm ci` (not `npm install`) matters here: it installs *exactly* the
-versions pinned in `package-lock.json`, so the CI build uses the identical
-dependency versions as local development — reproducible builds, no "works
-on my machine."
+[`npm ci`](https://docs.npmjs.com/cli/v10/commands/npm-ci) (not
+`npm install`) matters here: it installs *exactly* the versions pinned in
+[`package-lock.json`](https://docs.npmjs.com/cli/v10/configuring-npm/package-lock-json),
+so the CI build uses the identical dependency versions as local
+development — reproducible builds, no "works on my machine."
 
 The `concurrency` block (`group: pages, cancel-in-progress: true`) means
 if two pushes land close together, the older in-flight deploy gets
@@ -393,10 +435,11 @@ cancelled rather than both running and racing to publish — the site
 always ends up matching the latest commit, not whichever deploy happened
 to finish last.
 
-**GitHub Pages** itself is just a static file host built into GitHub —
-free, and it was pointed at "GitHub Actions" as its source (as opposed to
-"a specific branch's raw files," the older Pages model), which is what
-lets this custom build step run at all.
+**[GitHub Pages](https://docs.github.com/en/pages)** itself is just a
+static file host built into GitHub — free, and it was pointed at "GitHub
+Actions" as its source (as opposed to "a specific branch's raw files,"
+the older Pages model), which is what lets this custom build step run at
+all.
 
 ---
 
@@ -412,12 +455,12 @@ just a fix.
 missing a slash — `href="/WebCVexperience"` instead of
 `href="/WebCV/experience"`.
 
-**Root cause:** `astro.config.mjs` had `base: '/WebCV'` (no trailing
-slash). Astro exposes that value to page code, unmodified, as
-`import.meta.env.BASE_URL`. Every link in the codebase was built as
-`` `${base}experience` `` — string concatenation, expecting `base` to
-already end in `/`. Without the trailing slash in the config, that
-produced `"/WebCV" + "experience"` = `"/WebCVexperience"`.
+**Root cause:** [`astro.config.mjs`](https://docs.astro.build/en/reference/configuration-reference/#base)
+had `base: '/WebCV'` (no trailing slash). Astro exposes that value to
+page code, unmodified, as `import.meta.env.BASE_URL`. Every link in the
+codebase was built as `` `${base}experience` `` — string concatenation,
+expecting `base` to already end in `/`. Without the trailing slash in the
+config, that produced `"/WebCV" + "experience"` = `"/WebCVexperience"`.
 
 **How I found it:** not by staring at code — by *checking the actual
 build output*. After `astro build`, I grepped the generated HTML for
@@ -438,7 +481,8 @@ trailing slash is required, so it doesn't silently break again).
 `report: "/content/Final_Report_VerifyTheVector.pdf"`. That path is valid
 *in the repo*, but `content/` is never copied into `dist/` (see §5's
 explanation of why `content/` and `public/` are different) — so that link
-would 404 on the live site, even though nothing about the build failed.
+would [404](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/404)
+on the live site, even though nothing about the build failed.
 
 **How I found it:** same instinct as Bug 1 — after building, I didn't
 just trust that "it built," I actually inspected what got written to
@@ -464,9 +508,10 @@ links, not just trusting a green checkmark.
   this need to do" from "how do I build it," and to have a written
   artifact of requirements (acceptance criteria, breakpoints to support,
   color palette) that can be checked against later instead of relying on
-  memory. This is standard practice on real engineering teams — a spec
-  or design doc precedes implementation so decisions get made
-  deliberately, not accidentally while typing code.
+  memory. This is standard practice on real engineering teams — a
+  [design doc](https://www.industrialempathy.com/posts/design-docs-at-google/)
+  precedes implementation so decisions get made deliberately, not
+  accidentally while typing code.
 - **Why `PLAN.md` in addition to `SPEC.md`?** `SPEC.md` answers "what
   must be true when this is done" and barely changes. `PLAN.md` answers
   "what's actually done right now, and what did we decide along the way"
@@ -485,32 +530,41 @@ links, not just trusting a green checkmark.
 
 ## 10. Glossary
 
-- **Static site generation (SSG):** building HTML files once, ahead of
-  time, rather than generating them per-request on a server (SSR) or in
-  the browser via JavaScript (client-side rendering/SPA).
-- **Build time vs. runtime:** "build time" = when `astro build` runs (in
-  CI, before anyone visits); "runtime" = when a real visitor's browser is
-  loading the page. This project does essentially nothing at runtime
-  beyond serving static files — all the YAML-reading and templating
-  happens at build time.
-- **CI/CD:** Continuous Integration / Continuous Deployment — automatically
-  building and publishing on every change, instead of doing it by hand.
-- **YAML:** a human-readable data format (like JSON, but supports comments
-  and is less punctuation-heavy) — used here for `content/*.yaml`.
-- **Design tokens:** named variables for design values (colors, spacing)
-  defined once and referenced everywhere, so changing the palette or
-  adding a theme means editing one place, not hunting through every file.
-- **`prefers-color-scheme`:** a CSS media query that detects the visitor's
-  OS-level light/dark mode preference.
-- **OIDC (in the GitHub Actions permissions block):** a way for the CI job
-  to prove its identity to GitHub Pages without a manually-created,
-  manually-rotated secret token.
-- **`getStaticPaths`:** an Astro function that says "generate one page per
-  item in this list" for a dynamic route — the mechanism behind
-  `/projects/[slug].astro` producing one real HTML file per project.
+- **[Static site generation (SSG)](https://www.cloudflare.com/learning/performance/static-site-generator/):**
+  building HTML files once, ahead of time, rather than generating them
+  per-request on a server
+  ([SSR](https://developer.mozilla.org/en-US/docs/Glossary/SSR)) or in
+  the browser via JavaScript
+  ([client-side rendering/SPA](https://developer.mozilla.org/en-US/docs/Glossary/SPA)).
+- **[Build time vs. runtime](https://vercel.com/guides/what-is-the-difference-between-build-time-and-runtime):**
+  "build time" = when `astro build` runs (in CI, before anyone visits);
+  "runtime" = when a real visitor's browser is loading the page. This
+  project does essentially nothing at runtime beyond serving static
+  files — all the YAML-reading and templating happens at build time.
+- **[CI/CD](https://github.com/resources/articles/software-development/what-is-ci-cd):**
+  Continuous Integration / Continuous Deployment — automatically building
+  and publishing on every change, instead of doing it by hand.
+- **[YAML](https://yaml.org):** a human-readable data format (like
+  [JSON](https://www.json.org), but supports comments and is less
+  punctuation-heavy) — used here for `content/*.yaml`.
+- **[Design tokens](https://m3.material.io/foundations/design-tokens/overview):**
+  named variables for design values (colors, spacing) defined once and
+  referenced everywhere, so changing the palette or adding a theme means
+  editing one place, not hunting through every file.
+- **[`prefers-color-scheme`](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-color-scheme):**
+  a CSS media query that detects the visitor's OS-level light/dark mode
+  preference.
+- **[OIDC](https://openid.net/developers/how-connect-works/) (in the GitHub Actions permissions block):**
+  a way for the CI job to prove its identity to GitHub Pages without a
+  manually-created, manually-rotated secret token.
+- **[`getStaticPaths`](https://docs.astro.build/en/reference/routing-reference/#getstaticpaths):**
+  an Astro function that says "generate one page per item in this list"
+  for a dynamic route — the mechanism behind `/projects/[slug].astro`
+  producing one real HTML file per project.
 - **Base path:** the URL prefix a site is served under when it's not at a
-  domain's root (here, `/WebCV/`, because GitHub Pages project sites live
-  at `username.github.io/repo-name/`).
+  domain's root (here, `/WebCV/`, because
+  [GitHub Pages project sites](https://docs.github.com/en/pages/getting-started-with-github-pages/about-github-pages#types-of-github-pages-sites)
+  live at `username.github.io/repo-name/`).
 
 ---
 
@@ -563,3 +617,55 @@ already solve for free.
 → Point to the open items in `PLAN.md` §6 — honest, specific, shows you
 know the difference between "shipped" and "perfect," which is itself a
 good signal in an interview.
+
+---
+
+## 12. Further reading — every link, in one place
+
+| Term | Link |
+|---|---|
+| Astro | https://astro.build |
+| Astro docs — project structure | https://docs.astro.build/en/basics/project-structure/ |
+| Astro docs — components / `.astro` files | https://docs.astro.build/en/basics/astro-components/ |
+| Astro docs — layouts | https://docs.astro.build/en/basics/layouts/ |
+| Astro docs — routing | https://docs.astro.build/en/guides/routing/ |
+| Astro docs — `getStaticPaths` | https://docs.astro.build/en/reference/routing-reference/#getstaticpaths |
+| Astro docs — content collections | https://docs.astro.build/en/guides/content-collections/ |
+| Astro docs — environment variables (`BASE_URL`) | https://docs.astro.build/en/guides/environment-variables/ |
+| Astro docs — config reference | https://docs.astro.build/en/reference/configuration-reference/ |
+| React | https://react.dev |
+| Next.js | https://nextjs.org |
+| Node.js | https://nodejs.org |
+| npm — `npm ci` | https://docs.npmjs.com/cli/v10/commands/npm-ci |
+| npm — `package-lock.json` | https://docs.npmjs.com/cli/v10/configuring-npm/package-lock-json |
+| TypeScript | https://www.typescriptlang.org |
+| `js-yaml` (npm package) | https://www.npmjs.com/package/js-yaml |
+| YAML | https://yaml.org |
+| JSON | https://www.json.org |
+| Static site generation (concept) | https://www.cloudflare.com/learning/performance/static-site-generator/ |
+| Server-side rendering (SSR) | https://developer.mozilla.org/en-US/docs/Glossary/SSR |
+| Single-page app / client-side rendering | https://developer.mozilla.org/en-US/docs/Glossary/SPA |
+| Build time vs. runtime | https://vercel.com/guides/what-is-the-difference-between-build-time-and-runtime |
+| CDN | https://developer.mozilla.org/en-US/docs/Glossary/CDN |
+| Separation of concerns | https://en.wikipedia.org/wiki/Separation_of_concerns |
+| Single source of truth | https://en.wikipedia.org/wiki/Single_source_of_truth |
+| Headless CMS | https://www.contentful.com/r/knowledgebase/headless-cms/ |
+| CI/CD | https://github.com/resources/articles/software-development/what-is-ci-cd |
+| GitHub Actions | https://docs.github.com/en/actions |
+| GitHub Pages | https://docs.github.com/en/pages |
+| OpenID Connect (OIDC) — how it works | https://openid.net/developers/how-connect-works/ |
+| OIDC in GitHub Actions specifically | https://docs.github.com/en/actions/concepts/security/openid-connect |
+| CSS custom properties (variables) | https://developer.mozilla.org/en-US/docs/Web/CSS/Using_CSS_custom_properties |
+| `prefers-color-scheme` | https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-color-scheme |
+| CSS media queries | https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_media_queries |
+| CSS Grid | https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_grid_layout |
+| CSS Flexbox | https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_flexible_box_layout |
+| `clamp()` | https://developer.mozilla.org/en-US/docs/Web/CSS/clamp |
+| Responsive web design | https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/CSS_layout/Responsive_Design |
+| Design tokens | https://m3.material.io/foundations/design-tokens/overview |
+| Web accessibility (a11y) | https://developer.mozilla.org/en-US/docs/Web/Accessibility |
+| `aria-current` | https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-current |
+| SEO basics | https://developer.mozilla.org/en-US/docs/Glossary/SEO |
+| Open Graph protocol | https://ogp.me |
+| Canonical URLs | https://developers.google.com/search/docs/crawling-indexing/consolidate-duplicate-urls |
+| Design docs (why write a spec first) | https://www.industrialempathy.com/posts/design-docs-at-google/ |
