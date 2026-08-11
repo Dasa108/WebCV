@@ -6,6 +6,10 @@ Personal portfolio website.
   responsiveness/accessibility targets, acceptance criteria.
 - [`PLAN.md`](./PLAN.md) — execution plan, content inventory, and the
   playbook for adding new projects/experience entries later.
+- [`ARCHITECTURE.md`](./ARCHITECTURE.md) — how the code works and why,
+  written to explain (e.g. to an interviewer): the tech-stack decisions,
+  a full component/code walkthrough, the CI/CD pipeline, and two real
+  bugs hit and fixed along the way.
 
 Content sources (CV, project/internship reports) live in `content/`.
 `content/experience.yaml` and `content/projects.yaml` are the structured
