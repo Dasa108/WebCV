@@ -8,7 +8,7 @@ later without touching any page code.
 
 | | |
 |---|---|
-| **Status** | Site built and building cleanly with Astro; not yet deployed |
+| **Status** | **Live**: https://dasa108.github.io/WebCV/ |
 | **Last updated** | 2026-08-11 |
 
 ## 1. Source inventory
@@ -138,14 +138,23 @@ and a project detail page with HTTP 200.
 
 ## 6. Open TODOs
 
-**Before the first real deploy:**
-- [x] `astro.config.mjs` — `site` set to `https://Dasa108.github.io`,
-      `base: '/WebCV/'` (assumes the GitHub repo is named `WebCV` — update
-      both together if the repo ends up named differently).
-- [ ] In the GitHub repo settings → Pages, set the source to
-      **"GitHub Actions"** (the workflow won't deploy otherwise).
+**Done:**
+- [x] `astro.config.mjs` — `site: 'https://Dasa108.github.io'`,
+      `base: '/WebCV/'`.
+- [x] GitHub repo created (`Dasa108/WebCV`), Pages source set to
+      "GitHub Actions" (via `gh api repos/Dasa108/WebCV/pages -f
+      build_type=workflow`), initial commit pushed.
+- [x] Deploy workflow verified green end-to-end — live at
+      **https://dasa108.github.io/WebCV/** (all 5 routes return HTTP 200).
+
+**Still open:**
 - [ ] `src/pages/index.astro` — replace the bracketed `[TODO: ...]` line in
       the About section with what you're actually currently looking for.
+- [ ] Local git identity on this machine auto-resolved to
+      `sudarshanab@admin-68.iisclab.internal` rather than a real email —
+      fine for now, but run `git config --global user.email you@example.com`
+      (and `user.name`) if you want commits attributed differently going
+      forward.
 
 **Local dev environment note:** this machine had no Node.js; it was
 installed via `nvm` (`~/.nvm`) to build/verify the site. Run
