@@ -146,10 +146,10 @@ and a project detail page with HTTP 200.
       build_type=workflow`), initial commit pushed.
 - [x] Deploy workflow verified green end-to-end — live at
       **https://dasa108.github.io/WebCV/** (all 5 routes return HTTP 200).
+- [x] `src/pages/index.astro` — replaced the bracketed `[TODO: ...]` line in
+      the About section with what you're actually currently looking for.
 
 **Still open:**
-- [ ] `src/pages/index.astro` — replace the bracketed `[TODO: ...]` line in
-      the About section with what you're actually currently looking for.
 - [ ] Local git identity on this machine auto-resolved to
       `sudarshanab@admin-68.iisclab.internal` rather than a real email —
       fine for now, but run `git config --global user.email you@example.com`

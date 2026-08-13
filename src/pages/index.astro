@@ -27,16 +27,30 @@ const skillGroups = [
   active="home"
 >
   <!-- Hero -->
-  <section class="container">
-    <p class="eyebrow">Portfolio</p>
-    <h1>Sudarshana Chaitanya B N</h1>
-    <p style="font-size:1.15rem; max-width: 60ch;">
-      B.Tech student in Mathematics &amp; Computing at IISc Bangalore, focused on
-      machine learning, deep learning, and formal verification.
-    </p>
-    <div class="btn-row">
-      <a class="btn btn-primary" href={`mailto:${email}`}>Contact me</a>
-      <a class="btn btn-secondary" href={`${base}resume.pdf`} download>Download CV</a>
+  <section class="container hero">
+    <div class="hero-text">
+      <p class="eyebrow">Portfolio</p>
+      <h1>Sudarshana Chaitanya B N</h1>
+      <p style="font-size:1.15rem; max-width: 60ch;">
+        B.Tech student in Mathematics &amp; Computing at IISc Bangalore, focused on
+        machine learning, deep learning, and formal verification.
+      </p>
+      <div class="btn-row">
+        <a class="btn btn-primary" href={`mailto:${email}`}>Contact me</a>
+        <a class="btn btn-secondary" href={`${base}resume.pdf`} download>Download CV</a>
+      </div>
+    </div>
+    <!-- Drop your photo at public/images/profile.png (any square-ish crop,
+         ~500x500 works well) and it shows up here automatically. Hides
+         itself cleanly (no broken-image icon) until that file exists. -->
+    <div class="hero-photo">
+      <img
+        src={`${base}images/profile.png`}
+        alt="Sudarshana Chaitanya B N"
+        width="200"
+        height="200"
+        onerror="this.closest('.hero-photo').style.display='none'"
+      />
     </div>
   </section>
 
@@ -44,19 +58,19 @@ const skillGroups = [
   <section class="container">
     <h2>About</h2>
     <p style="max-width: 65ch;">
-      I'm a Mathematics &amp; Computing undergraduate at the Indian Institute of
-      Science (IISc), Bangalore, with a focus on machine learning and deep
-      learning foundations. My recent work spans formal verification of
-      visual/graphical claims using Lean 4 and the study of adversarial
-      robustness in deep neural networks. I enjoy problems that sit at the
-      intersection of rigorous mathematics and practical ML systems.
+      I'm Sudarshana, a junior at the Indian Institute of Science (IISc)
+      Bangalore, pursuing a B.Tech in Mathematics &amp; Computing, with a
+      focus on machine learning and deep learning foundations. I grew up in
+      Bengaluru for 19 years before starting here. My recent work spans
+      formal verification of visual/graphical claims using Lean 4 and the
+      study of adversarial robustness in deep neural networks — I enjoy
+      problems that sit at the intersection of rigorous mathematics and
+      practical ML systems.
     </p>
     <p style="max-width: 65ch; color: var(--color-text-muted);">
-      <!-- TODO (see PLAN.md §6): this is the one line a CV can't answer —
-           what are you currently looking for? Internships, full-time roles,
-           research collaborations? Replace the bracketed text below. -->
-      [TODO: add what you're currently looking for — e.g. "currently looking
-      for research internships in ML/formal methods for Summer 2027."]
+      Currently open to just about anything that lets me learn — new
+      problems, new areas of math and ML, new kinds of teams. If that sounds
+      like a fit, reach out.
     </p>
   </section>
 

@@ -326,9 +326,9 @@ because it's the direct mechanism behind "one YAML entry = one live page."
 
 ### 6.4 `src/styles/global.css` — design tokens, dark mode, responsiveness
 
-The palette (Naruto-inspired: orange primary accent, navy/cream base
-pair, sparing green/red accents — the exact colors and their reasoning
-are in `SPEC.md` §9.1) is implemented as
+The palette (a three-anime blend — Naruto orange primary accent, navy/cream
+base pair, sparing One Piece gold / Food Wars crimson accents — the exact
+colors and their reasoning are in `SPEC.md` §9.1) is implemented as
 **[CSS custom properties](https://developer.mozilla.org/en-US/docs/Web/CSS/Using_CSS_custom_properties)**
 (a.k.a. CSS variables), not hardcoded hex values scattered through the
 stylesheet:

@@ -1,14 +1,16 @@
 /* ============================================================================
-   Palette — Naruto-inspired, per SPEC.md §9.1. Light mode is the :root
-   default; dark mode overrides via prefers-color-scheme (SPEC §9.3).
+   Palette — three-anime blend, per SPEC.md §9.1. One accent per series
+   (Naruto / One Piece / Food Wars), each still passing WCAG AA as text.
+   Light mode is the :root default; dark mode overrides via
+   prefers-color-scheme (SPEC §9.3).
    ========================================================================= */
 :root {
   /* accents */
   --color-accent: #e8611c; /* Naruto Orange — the one recurring brand color */
-  --color-accent-hover: #c74c10; /* Deep Orange */
-  --color-accent-2: #5b8c5a; /* Konoha Leaf Green — sparing use */
-  --color-accent-rare: #b23a2e; /* Sharingan Red — rare/featured use only */
-  --color-steel: #9ca3af; /* Headband Steel — dividers/borders */
+  --color-accent-hover: #c74c10; /* Naruto Deep Orange */
+  --color-accent-2: #8a6116; /* One Piece Straw Hat Gold — sparing use */
+  --color-accent-rare: #c81e3a; /* Food Wars Shokugeki Crimson — rare/featured use only */
+  --color-steel: #9ca3af; /* Headband Steel (Naruto) — dividers/borders */
 
   /* base pair: light mode */
   --color-bg: #fbf6ee; /* Scroll Cream */
@@ -36,7 +38,8 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    /* base pair: dark mode — Shinobi Navy background, Deep Slate surfaces */
+    /* base pair: dark mode — Shinobi Navy / Grand Line night-sea background,
+       Deep Slate surfaces */
     --color-bg: #1b1f2a;
     --color-surface: #242938;
     --color-text: #edeae3; /* Off-White */
@@ -44,7 +47,7 @@
     --color-border: #333a4c;
     --shadow: 0 1px 3px rgba(0, 0, 0, 0.35), 0 1px 2px rgba(0, 0, 0, 0.3);
     --shadow-hover: 0 8px 24px rgba(0, 0, 0, 0.45);
-    /* accent orange stays the same in both modes, per SPEC §9.3 */
+    /* all three accents stay the same in both modes, per SPEC §9.3 */
   }
 }
 
@@ -127,6 +130,37 @@ section + section {
   letter-spacing: 0.06em;
   font-size: 0.8rem;
   margin-bottom: var(--space-1);
+}
+
+/* ============================================================================
+   Hero (SPEC §9.4) — optional profile photo alongside the intro text
+   ========================================================================= */
+.hero {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-4);
+}
+.hero-text {
+  flex: 1 1 360px;
+}
+.hero-photo {
+  flex: 0 0 auto;
+  margin-inline: auto;
+}
+.hero-photo img {
+  width: 200px;
+  height: 200px;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 3px solid var(--color-border);
+  box-shadow: var(--shadow);
+}
+@media (max-width: 480px) {
+  .hero-photo img {
+    width: 140px;
+    height: 140px;
+  }
 }
 
 /* ============================================================================

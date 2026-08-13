@@ -136,7 +136,7 @@ A grid/list of project cards built from the project report(s) and, over
 time, any additional projects you add. Each card (schema in §7.5): title,
 one-line summary, tech-stack tags, links (repo/demo), and a short
 outcome/result line. Optionally support a "featured" flag (uses the
-Sharingan-red accent from §9.1, sparingly) to pin standout projects to the
+Shokugeki-crimson accent from §9.1, sparingly) to pin standout projects to the
 top regardless of date.
 
 Each card links through to its own detail page (`/projects/<slug>`,
@@ -228,39 +228,39 @@ HTML/CSS or duplicating a card's markup to add one more item.
 ## 9. Presentation & Visual Design
 
 - **Style:** clean, professional, generous whitespace — content and
-  credibility should carry the page, not decoration. The Naruto-inspired
-  palette below should read as "warm, confident, deliberate accent color,"
-  not as fan-art — no character art, jutsu graphics, or headband/kunai
+  credibility should carry the page, not decoration. The palette below
+  should read as "warm, confident, deliberate accent color," not as
+  fan-art — no character art, jutsu graphics, Jolly Roger, or knife/fire
   iconography on the actual page.
 
-### 9.1 Color palette — Naruto-inspired
+### 9.1 Color palette — three-anime blend (Naruto / One Piece / Food Wars)
 
-Drawn from the anime's signature colors (Naruto's orange jumpsuit, the
-Konoha forehead protector, ninja-night navy, and scroll/bandage cream),
-adapted into a palette that still passes WCAG AA contrast for a professional
-site. One dominant accent, not five competing ones.
+One accent color per series — Naruto's jumpsuit orange, One Piece's straw
+hat gold, and Food Wars' shokugeki crimson — plus a shared navy/cream base
+pair, adapted into a palette that still passes WCAG AA contrast for a
+professional site. One dominant accent, not five competing ones.
 
-| Role | Color | Hex | Naruto reference |
+| Role | Color | Hex | Source |
 |---|---|---|---|
-| Primary accent (CTAs, links, section highlights) | Naruto Orange | `#E8611C` | His jumpsuit |
-| Primary accent — hover/active | Deep Orange | `#C74C10` | Darker jumpsuit shade |
-| Secondary accent (tags, small highlights, focus rings) | Konoha Leaf Green | `#5B8C5A` | Leaf-village symbol |
-| Rare highlight (badges, "featured" flags — use sparingly) | Sharingan Red | `#B23A2E` | Uchiha clan / Sharingan |
-| Dark base (text, dark-mode background, header/footer) | Shinobi Navy | `#1B1F2A` | Night-mission navy-black |
-| Light base (page background, light mode) | Scroll Cream | `#FBF6EE` | Ninja scroll / bandage cream |
+| Primary accent (CTAs, links, section highlights) | Naruto Orange | `#E8611C` | *Naruto* — his jumpsuit |
+| Primary accent — hover/active | Deep Orange | `#C74C10` | *Naruto* — darker jumpsuit shade |
+| Secondary accent (tags, small highlights, focus rings) | Straw Hat Gold | `#8A6116` | *One Piece* — Luffy's straw hat |
+| Rare highlight (badges, "featured" flags — use sparingly) | Shokugeki Crimson | `#C81E3A` | *Food Wars* — the title/battle red |
+| Dark base (text, dark-mode background, header/footer) | Shinobi Navy | `#1B1F2A` | *Naruto* — night-mission navy-black |
+| Light base (page background, light mode) | Scroll Cream | `#FBF6EE` | *Naruto* — ninja scroll / bandage cream |
 | Surface (cards, panels) — light mode | Warm White | `#FFFFFF` | — |
 | Surface (cards, panels) — dark mode | Deep Slate | `#242938` | — |
 | Body text — light mode | Ink | `#232323` | — |
 | Body text — dark mode | Off-White | `#EDEAE3` | — |
-| Metal accent (dividers, icon strokes, subtle borders) | Headband Steel | `#9CA3AF` | Forehead protector plate |
+| Metal accent (dividers, icon strokes, subtle borders) | Headband Steel | `#9CA3AF` | *Naruto* — forehead protector plate |
 
 **Usage rules**
 - Orange (`#E8611C`) is the *one* recurring brand color: nav highlight,
   primary buttons, link color, active section indicator. Don't dilute it by
-  also using red/green at that same frequency.
-- Green and red are accents only — e.g. green for tech-stack tags or a
-  "currently open to work" badge; red reserved for a single standout element
-  (e.g. a "featured project" ribbon), not body copy or repeated UI.
+  also using gold/crimson at that same frequency.
+- Gold and crimson are accents only — e.g. gold for tech-stack tags or a
+  "currently open to work" badge; crimson reserved for a single standout
+  element (e.g. a "featured project" ribbon), not body copy or repeated UI.
 - Navy/cream are the base pair: light mode = cream background + navy text;
   dark mode = navy background + off-white text. Don't mix warm cream with
   dark-mode navy in the same view.
@@ -268,7 +268,10 @@ site. One dominant accent, not five competing ones.
   navy-on-cream both need a contrast checker pass for WCAG AA
   (orange text on white/cream is the one combination likely to need
   darkening — prefer using orange for large UI elements/buttons with white
-  text on top, rather than as small body text on a light background).
+  text on top, rather than as small body text on a light background). The
+  gold and crimson accents above are already the darkened, text-safe shades
+  (deep straw gold rather than bright yellow, deep crimson rather than
+  bright red) — don't swap in a brighter/lighter tone for body text.
 
 ### 9.2 Typography & consistency
 - One heading font + one body font (system font stack is fine and fast);
@@ -288,7 +291,7 @@ site. One dominant accent, not five competing ones.
 ### 9.4 Imagery
 - A professional photo (optional but recommended) in the hero; project cards
   may include a screenshot/thumbnail where available.
-- Keep photography/screenshots realistic and professional — the Naruto
+- Keep photography/screenshots realistic and professional — the anime
   influence lives entirely in the color palette and stays out of imagery,
   iconography, and copy.
 
@@ -375,8 +378,8 @@ WebCV/
 - ~~Do you want a downloadable PDF resume button, or is the site itself
   meant to *be* the resume?~~ — resolved: downloadable PDF button
   (Home hero + Contact section link to `/resume.pdf`).
-- ~~Any existing brand/color preference~~ — resolved: Naruto-inspired
-  palette (§9.1), orange as primary accent.
+- ~~Any existing brand/color preference~~ — resolved: three-anime blend
+  (Naruto / One Piece / Food Wars) palette (§9.1), orange as primary accent.
 - ~~Single-page scroll site, or separate pages per section~~ — resolved:
   multi-page, with dedicated `/experience` and `/projects` pages (§7), plus
   a detail page per project (§7.4).
