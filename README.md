@@ -10,6 +10,10 @@ Personal portfolio website.
   written to explain (e.g. to an interviewer): the tech-stack decisions,
   a full component/code walkthrough, the CI/CD pipeline, and two real
   bugs hit and fixed along the way.
+- [`ARCHITECTURE.pdf`](./ARCHITECTURE.pdf) — the same explainer, typeset
+  as a standalone PDF for reading/sharing outside the repo (source:
+  [`ARCHITECTURE.tex`](./ARCHITECTURE.tex); rebuild with
+  `tectonic ARCHITECTURE.tex` or any `pdflatex`/`xelatex`).
 
 Content sources (CV, project/internship reports) live in `content/`.
 `content/experience.yaml` and `content/projects.yaml` are the structured
