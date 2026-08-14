@@ -141,13 +141,17 @@ Freelance / Volunteer), dates, and 2–4 bullet points of impact (favor
 quantified outcomes, pulled from the internship report for the current
 entry).
 
-Entries hang off a vertical connector rail rendered as a stylized, gnarled
-tendril line (a small repeating SVG tile, `.timeline`/`.timeline-item` in
-`global.css`) rather than a plain straight line — an abstract nod to the
-Infinite Tsukuyomi's root/tendril growth from the palette's Naruto lineage
-(§9.1). It stays within the §9 guardrail against literal fan art: wavy
-abstract strokes only, no character silhouettes or jutsu iconography, and it
-recolors for dark mode like everything else.
+Entries hang off a central, gnarled **tree trunk** (`.tree`/`.tree-item` in
+`global.css`, inline SVG in `experience.astro`) that alternates branches
+left/right per entry, rather than a plain connector line — a bolder, more
+literal nod to the God-Tree/Ten-Tails from the Infinite Tsukuyomi arc: thick
+at the top (most recent entry), tapering to a root at the bottom (oldest),
+with thorn/barb accents along the trunk and each branch. It stays within the
+§9 guardrail against literal fan art: organic filled/stroked shapes doing
+real structural work, no character silhouettes, beast forms, or jutsu
+iconography. Colored via a `--color-tendril` token (light/dark pair, §9.1
+style) so both modes fall out of the existing palette system for free.
+Collapses to a single-side layout (trunk pinned left) below 768px (§8.1).
 
 ### 7.4 Projects page (`/projects`)
 

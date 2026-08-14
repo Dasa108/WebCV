@@ -4,6 +4,27 @@ import ExperienceCard from '../components/ExperienceCard.astro';
 import { getExperience } from '../lib/content';
 
 const experience = getExperience();
+
+// Trunk artwork: one filled, jagged-edged tapering silhouette (thick at the
+// top = most recent entry, tapering to a root at the bottom = oldest), plus
+// a few thorn/barb accents alternating sides — see the "Experience tree"
+// block in global.css for the full design rationale.
+const trunkPath =
+  'M20,0 26,60 18,120 30,180 24,260 34,340 28,420 38,500 33,580 41,660 37,740 44,820 40,900 46,960 47,1000 ' +
+  'L54,1000 53,960 59,900 55,820 62,740 57,660 65,580 60,500 68,420 63,340 72,260 66,180 76,120 70,60 80,0 Z';
+const trunkThorns = [
+  '30,175 5,195 30,200',
+  '68,415 95,435 68,440',
+  '37,655 10,672 37,680',
+  '63,845 88,862 63,870',
+];
+
+// Branch artwork: one reusable curve, drawn reaching from the trunk (local
+// x=0) out to the card (local x=48). Left-side items mirror it with CSS
+// (`transform: scaleX(-1)` on `.tree-branch`) rather than duplicating the
+// path — the node dot is a circle, so it stays put under the flip.
+const branchPath = 'M2,20 C14,8 24,32 46,17';
+const branchThorn = '24,16 30,4 28,18';
 ---
 
 <Layout
@@ -19,14 +40,27 @@ const experience = getExperience();
       reverse-chronological list.
     </p>
 
-    <!-- Reverse-chronological timeline. The connecting rail is a stylized
-         dark tendril line (an abstract nod to the Infinite Tsukuyomi's
-         root-like tendrils, not literal fan art) rather than a plain line —
-         see the "Experience timeline" block in global.css. -->
-    <div class="timeline" style="margin-top: var(--space-3);">
+    <!-- Reverse-chronological tree: a central gnarled trunk (thick at the
+         top/newest, tapering to a root at the bottom/oldest) with entries
+         branching off alternating sides — see the "Experience tree" block
+         in global.css for the full rationale. -->
+    <div class="tree" style="margin-top: var(--space-3);">
+      <div class="tree-trunk" aria-hidden="true">
+        <svg viewBox="0 0 100 1000" preserveAspectRatio="none">
+          <path fill="var(--color-tendril)" d={trunkPath} />
+          {trunkThorns.map((points) => <polygon fill="var(--color-tendril)" points={points} />)}
+        </svg>
+      </div>
       {
-        experience.map((entry) => (
-          <div class="timeline-item">
+        experience.map((entry, i) => (
+          <div class={`tree-item ${i % 2 === 0 ? 'tree-item--right' : 'tree-item--left'}`}>
+            <div class="tree-branch" aria-hidden="true">
+              <span class="tree-node" />
+              <svg viewBox="0 0 48 40" preserveAspectRatio="none">
+                <path d={branchPath} stroke="var(--color-tendril)" stroke-width="6" fill="none" stroke-linecap="round" />
+                <polygon points={branchThorn} fill="var(--color-tendril)" />
+              </svg>
+            </div>
             <ExperienceCard entry={entry} />
           </div>
         ))
