@@ -1,0 +1,121 @@
+---
+import Layout from '../components/Layout.astro';
+
+const base = import.meta.env.BASE_URL;
+const email = 'sudarshanab@iisc.ac.in';
+
+const skillGroups = [
+  { label: 'Languages', items: ['Python'] },
+  { label: 'ML / DL', items: ['Machine Learning', 'Deep Learning foundations', 'PyTorch'] },
+  { label: 'Formal methods', items: ['Lean 4', 'Mathlib'] },
+  {
+    label: 'Math',
+    items: ['Linear Algebra', 'Probability & Statistics', 'Discrete Mathematics', 'Algebraic Structures'],
+  },
+];
+
+const education = [
+  { degree: 'B.Tech in Mathematics and Computing', institution: 'Indian Institute of Science (IISc)', score: '8.2 CGPA', year: '2028' },
+  { degree: 'Class XII (CBSE)', institution: 'Narayana e-Techno School', score: '96%', year: '2024' },
+  { degree: 'Class X (ICSE)', institution: 'Sri Vani Public School', score: '94.83%', year: '2022' },
+];
+---
+
+<Layout
+  title="About — Sudarshana Chaitanya B N"
+  description="Background, education, skills, and extracurriculars for Sudarshana Chaitanya B N — B.Tech student in Mathematics & Computing at IISc Bangalore."
+  active="about"
+>
+  <!-- Intro -->
+  <section class="container">
+    <p class="eyebrow">About</p>
+    <h1>About Me</h1>
+    <p style="max-width: 65ch;">
+      I'm Sudarshana, a junior at the Indian Institute of Science (IISc)
+      Bangalore, pursuing a B.Tech in Mathematics &amp; Computing, with a
+      focus on machine learning and deep learning foundations. I grew up in
+      Bengaluru for 19 years before starting here. My recent work spans
+      formal verification of visual/graphical claims using Lean 4 and the
+      study of adversarial robustness in deep neural networks — I enjoy
+      problems that sit at the intersection of rigorous mathematics and
+      practical ML systems.
+    </p>
+    <p style="max-width: 65ch; color: var(--color-text-muted);">
+      Currently open to just about anything that lets me learn — new
+      problems, new areas of math and ML, new kinds of teams. If that sounds
+      like a fit, <a href={`mailto:${email}`}>reach out</a>.
+    </p>
+  </section>
+
+  <!-- Education -->
+  <section class="container">
+    <h2>Education</h2>
+    <div class="card" style="overflow-x: auto;">
+      <table class="edu-table">
+        <thead>
+          <tr>
+            <th>Degree / Certificate</th>
+            <th>Institution</th>
+            <th>Score</th>
+            <th>Year</th>
+          </tr>
+        </thead>
+        <tbody>
+          {
+            education.map((row) => (
+              <tr>
+                <td>{row.degree}</td>
+                <td>{row.institution}</td>
+                <td>{row.score}</td>
+                <td>{row.year}</td>
+              </tr>
+            ))
+          }
+        </tbody>
+      </table>
+    </div>
+    <p class="meta" style="margin-top: var(--space-2);">
+      Entrance exams: JEE Advanced AIR 2322 · JEE Main AIR 2131 · KCET Rank 134.
+    </p>
+  </section>
+
+  <!-- Skills -->
+  <section class="container">
+    <h2>Skills</h2>
+    <div class="card-grid">
+      {
+        skillGroups.map((group) => (
+          <div class="card">
+            <h3>{group.label}</h3>
+            <ul class="tag-list">
+              {group.items.map((item) => (
+                <li>{item}</li>
+              ))}
+            </ul>
+          </div>
+        ))
+      }
+    </div>
+  </section>
+
+  <!-- Extracurriculars -->
+  <section class="container">
+    <h2>Extracurriculars</h2>
+    <ul class="bullets">
+      <li>Convener, IISc Gymkhana Cricket Club — leading the club, organizing activities, and playing as an active cricketer.</li>
+      <li>Mess Secretary (2024–2025) — managed and coordinated mess operations, logistics, and student concerns for a full year.</li>
+      <li>Core Member, Databased (undergraduate club) — 2025.</li>
+      <li>Event Volunteer, IISc Open Day (2025, 2026) — conducted a seminar on Chaotic Systems (2026) and demonstrated Semaphore-based systems (2025).</li>
+      <li>Attended the Leanlang for Programming summer school at IISc (July 6–10, 2026).</li>
+      <li>Active and engaged member of the Telugu community at IISc.</li>
+    </ul>
+  </section>
+
+  <!-- CTA back out -->
+  <section class="container">
+    <div class="btn-row">
+      <a class="btn btn-primary" href={`mailto:${email}`}>Contact me</a>
+      <a class="btn btn-secondary" href={`${base}resume.pdf`} download>Download CV</a>
+    </div>
+  </section>
+</Layout>

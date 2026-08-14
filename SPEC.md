@@ -86,35 +86,46 @@ time (new internships/jobs, new projects) without needing a redesign.
 
 A persistent top nav present on every page:
 
-`Home` · `Experience` · `Projects` · `Contact` (anchor on Home, or its own
-section) — current page indicated with the primary orange accent (§9.1).
-Logo/name on the left links back to Home.
+`Home` · `About` · `Experience` · `Projects` · `Contact` (anchor on Home, or
+its own section) — current page indicated with the primary orange accent
+(§9.1). Logo/name on the left links back to Home.
 
 ### 7.2 Home page (`/`)
 
 1. **Hero / Header**
    - Name, one-line professional tagline (e.g. role + specialization).
    - Primary CTA buttons: "Contact me" (mailto) and "Download CV" (PDF).
-2. **About**
-   - Short bio (3–5 sentences) synthesized from the CV: background,
-     current focus, what you're looking for.
-3. **Skills**
-   - Grouped (e.g. Languages, Frameworks/Tools, ML/Data, Other) rather than
-     one long unsorted list.
-4. **Highlights strip** *(optional but recommended)*
+2. **About teaser**
+   - 1–2 sentence version of the bio, with a "More about me →" link into the
+     dedicated About page (§7.2b) — the full bio, education, and skills now
+     live there so Home stays a fast overview, not a second About page.
+3. **Highlights strip** *(optional but recommended)*
    - 2–3 top picks pulled from Experience/Projects with a "See all →" link
      into the respective page, so Home stays short while still teasing the
      fuller pages.
-5. **Extracurriculars**
-   - Clubs, competitions, volunteering, leadership roles — shows dimension
-     beyond coursework/work.
-6. **Contact**
+4. **Contact**
    - Email (required), plus optional LinkedIn, GitHub, phone.
    - Prefer a visible `mailto:` link and/or simple contact form (static form
      via a service like Formspree if a backend isn't wanted).
-7. **Footer**
-   - Quick links (Home/Experience/Projects/Contact), copyright/last-updated
-     line. Shared across all pages.
+5. **Footer**
+   - Quick links (Home/About/Experience/Projects/Contact),
+     copyright/last-updated line. Shared across all pages.
+
+### 7.2b About page (`/about`)
+
+The full "who are you" page, split out from Home so the landing view stays
+short while this page carries the depth:
+
+1. **Intro** — the full bio (3–5 sentences) synthesized from the CV:
+   background, current focus, what you're looking for.
+2. **Education** — table from the CV (degree/institution/score/year), plus
+   entrance-exam results as a one-line note.
+3. **Skills** — grouped (Languages, ML/DL, Formal methods, Math) rather than
+   one long unsorted list.
+4. **Extracurriculars** — clubs, competitions, volunteering, leadership
+   roles — shows dimension beyond coursework/work.
+5. **CTA** — "Contact me" / "Download CV", same as Home, so this page also
+   converts on its own if someone lands here directly (e.g. from Google).
 
 ### 7.3 Experience page (`/experience`)
 
@@ -129,6 +140,14 @@ organization, an entry-type badge (Internship / Full-time / Part-time /
 Freelance / Volunteer), dates, and 2–4 bullet points of impact (favor
 quantified outcomes, pulled from the internship report for the current
 entry).
+
+Entries hang off a vertical connector rail rendered as a stylized, gnarled
+tendril line (a small repeating SVG tile, `.timeline`/`.timeline-item` in
+`global.css`) rather than a plain straight line — an abstract nod to the
+Infinite Tsukuyomi's root/tendril growth from the palette's Naruto lineage
+(§9.1). It stays within the §9 guardrail against literal fan art: wavy
+abstract strokes only, no character silhouettes or jutsu iconography, and it
+recolors for dark mode like everything else.
 
 ### 7.4 Projects page (`/projects`)
 
@@ -346,6 +365,7 @@ WebCV/
     ├── lib/content.ts               # reads content/*.yaml at build time (js-yaml)
     ├── pages/
     │   ├── index.astro              # Home (§7.2)
+    │   ├── about.astro              # About page (§7.2b)
     │   ├── experience.astro         # Experience page (§7.3)
     │   └── projects/
     │       ├── index.astro          # Projects grid (§7.4)

@@ -19,8 +19,18 @@ const experience = getExperience();
       reverse-chronological list.
     </p>
 
-    <div class="card-list" style="margin-top: var(--space-3);">
-      {experience.map((entry) => <ExperienceCard entry={entry} />)}
+    <!-- Reverse-chronological timeline. The connecting rail is a stylized
+         dark tendril line (an abstract nod to the Infinite Tsukuyomi's
+         root-like tendrils, not literal fan art) rather than a plain line —
+         see the "Experience timeline" block in global.css. -->
+    <div class="timeline" style="margin-top: var(--space-3);">
+      {
+        experience.map((entry) => (
+          <div class="timeline-item">
+            <ExperienceCard entry={entry} />
+          </div>
+        ))
+      }
     </div>
   </section>
 </Layout>

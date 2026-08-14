@@ -9,16 +9,6 @@ const latestRole = experience[0];
 const featuredProject = projects.find((p) => p.featured) ?? projects[0];
 
 const email = 'sudarshanab@iisc.ac.in';
-
-const skillGroups = [
-  { label: 'Languages', items: ['Python'] },
-  { label: 'ML / DL', items: ['Machine Learning', 'Deep Learning foundations', 'PyTorch'] },
-  { label: 'Formal methods', items: ['Lean 4', 'Mathlib'] },
-  {
-    label: 'Math',
-    items: ['Linear Algebra', 'Probability & Statistics', 'Discrete Mathematics', 'Algebraic Structures'],
-  },
-];
 ---
 
 <Layout
@@ -54,43 +44,19 @@ const skillGroups = [
     </div>
   </section>
 
-  <!-- About -->
+  <!-- About teaser -->
   <section class="container">
     <h2>About</h2>
     <p style="max-width: 65ch;">
       I'm Sudarshana, a junior at the Indian Institute of Science (IISc)
       Bangalore, pursuing a B.Tech in Mathematics &amp; Computing, with a
-      focus on machine learning and deep learning foundations. I grew up in
-      Bengaluru for 19 years before starting here. My recent work spans
-      formal verification of visual/graphical claims using Lean 4 and the
-      study of adversarial robustness in deep neural networks — I enjoy
+      focus on machine learning and deep learning foundations. I enjoy
       problems that sit at the intersection of rigorous mathematics and
       practical ML systems.
     </p>
-    <p style="max-width: 65ch; color: var(--color-text-muted);">
-      Currently open to just about anything that lets me learn — new
-      problems, new areas of math and ML, new kinds of teams. If that sounds
-      like a fit, reach out.
+    <p class="meta">
+      <a href={`${base}about`}>More about me, education &amp; skills →</a>
     </p>
-  </section>
-
-  <!-- Skills -->
-  <section class="container">
-    <h2>Skills</h2>
-    <div class="card-grid">
-      {
-        skillGroups.map((group) => (
-          <div class="card">
-            <h3>{group.label}</h3>
-            <ul class="tag-list">
-              {group.items.map((item) => (
-                <li>{item}</li>
-              ))}
-            </ul>
-          </div>
-        ))
-      }
-    </div>
   </section>
 
   <!-- Highlights -->
@@ -122,18 +88,6 @@ const skillGroups = [
         )
       }
     </div>
-  </section>
-
-  <!-- Extracurriculars -->
-  <section class="container">
-    <h2>Extracurriculars</h2>
-    <ul class="bullets">
-      <li>Convener, IISc Gymkhana Cricket Club — leading the club, organizing activities, and playing as an active cricketer.</li>
-      <li>Mess Secretary (2024–2025) — managed and coordinated mess operations, logistics, and student concerns for a full year.</li>
-      <li>Core Member, Databased (undergraduate club) — 2025.</li>
-      <li>Event Volunteer, IISc Open Day (2025, 2026) — conducted a seminar on Chaotic Systems (2026) and demonstrated Semaphore-based systems (2025).</li>
-      <li>Attended the Leanlang for Programming summer school at IISc (July 6–10, 2026).</li>
-    </ul>
   </section>
 
   <!-- Contact -->
