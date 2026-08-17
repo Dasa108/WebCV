@@ -9,7 +9,7 @@ later without touching any page code.
 | | |
 |---|---|
 | **Status** | **Live**: https://dasa108.github.io/WebCV/ |
-| **Last updated** | 2026-08-11 |
+| **Last updated** | 2026-08-17 |
 
 ## 1. Source inventory
 
@@ -126,17 +126,65 @@ WebCV/
 │   ├── documents/                           ✅ NEW — report/slide PDFs actually served to the site
 │   └── images/{experience,projects}/        ✅ READMEs; no images yet (intentional, §2)
 └── src/
-    ├── lib/content.ts                       ✅ NEW — YAML loader (js-yaml), typed
-    ├── styles/global.css                    ✅ NEW — palette + responsive base styles
-    ├── components/                          ✅ NEW — Layout, Nav, Footer, ExperienceCard, ProjectCard
-    └── pages/                               ✅ NEW — index, experience, projects/index, projects/[slug]
+    ├── lib/content.ts                       ✅ YAML loader (js-yaml), typed
+    ├── lib/theme.ts                         ✅ NEW (§6) — theme list/labels + localStorage helpers
+    ├── styles/global.css                    ✅ token-driven layout/type/spacing/card/connector/mascot styles
+    ├── styles/themes/*.css                  ✅ NEW (§6) — one CSS-custom-property set per theme
+    ├── components/                          ✅ Layout, Nav, Footer, ExperienceCard, ProjectCard,
+    │                                            ThemeSwitcher, PixelMascot, ExtracurricularsBackground (all §6)
+    ├── components/connectors/*.astro        ✅ NEW (§6) — Tree/Butter/Magic Experience connectors
+    └── pages/                               ✅ index, about, experience, projects/index, projects/[slug]
 ```
 
 Verified: `npm run build` produces 5 static pages with no errors; base-path
 links (`/WebCV/...`) resolve correctly; `npm run preview` serves `/WebCV/`
 and a project detail page with HTTP 200.
 
-## 6. Open TODOs
+## 6. Theme system (added 2026-08-17, SPEC.md §7)
+
+The single static palette was replaced with three switchable themes — Food
+Wars (default), Naruto (dark mode), Fairy Tail — per the SPEC rewrite.
+What changed, concretely:
+
+- `src/styles/themes/{foodwars,naruto,fairytail}.css` — one CSS custom-
+  property set per theme, each scoped under `:root[data-theme='…']`
+  (`foodwars.css` also doubles as the bare-`:root` fallback for no-JS).
+  `global.css` no longer hardcodes any color — every rule reads the same
+  token names regardless of active theme.
+- **Contrast fix vs. the SPEC §7 tables verbatim:** the secondary/rare
+  accent hexes (Golden Saffron, Butter Amber, Rasengan Blue, Sage Gold,
+  Celestial Gold) fail WCAG AA as small *text* on their theme's background
+  — they're fine as fills. `.badge`/`.badge-featured` (global.css) were
+  redesigned as solid-fill pills with a computed `--color-on-accent-2` /
+  `--color-on-accent-rare` per theme, rather than tinted-background +
+  colored-text. The brand hexes themselves are unchanged from §7.
+- `src/lib/theme.ts` + `ThemeSwitcher.astro` — the 3-point slider (native
+  `<input type="range">` for free keyboard/screen-reader support), plus a
+  blocking inline script in `Layout.astro` (duplicates theme.ts's small
+  "read + apply" half — has to run synchronously, before first paint) so
+  reloading/navigating never flashes the wrong theme.
+- `src/components/connectors/{Tree,Butter,Magic}Connector.astro` — each
+  is a full self-contained connector (spine + per-item branch + the
+  `ExperienceCard`s themselves), all three rendered into `experience.astro`
+  at once; `global.css`'s `.tree--<theme>` rules show only the active
+  one. Trades a little duplicate DOM (cards render 3×, two hidden via
+  `display:none`) for zero JS-driven re-rendering on theme switch.
+- `PixelMascot.astro` + `ExtracurricularsBackground.astro` — one shared
+  40×48 chibi sprite (only the small held prop varies per entry) colored
+  via `--mascot-*` tokens, so a theme switch recolors the whole roster
+  without swapping in different art; the background layer uses the same
+  show/hide-by-`data-theme` technique as the connectors.
+
+Verified: `npm run build` (0 errors, 6 pages), plus a `npm run preview` +
+`curl` pass confirming all three theme CSS blocks, all three `.tree--*`
+connectors, all 6 mascots, and the anti-flash script (ahead of the first
+stylesheet `<link>` in `<head>`) actually land in the built HTML/CSS/JS.
+No real browser was available in this session to eyeball the slider
+interaction — worth a manual pass (click + drag + arrow keys on all three
+stops, on the deployed URL) before calling Acceptance Criterion 9 (§8)
+fully verified.
+
+## 7. Open TODOs
 
 **Done:**
 - [x] `astro.config.mjs` — `site: 'https://Dasa108.github.io'`,

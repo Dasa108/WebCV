@@ -1,7 +1,11 @@
 ---
 import Nav from './Nav.astro';
 import Footer from './Footer.astro';
+import '../styles/themes/foodwars.css';
+import '../styles/themes/naruto.css';
+import '../styles/themes/fairytail.css';
 import '../styles/global.css';
+import { STORAGE_KEY, THEMES } from '../lib/theme';
 
 interface Props {
   title: string;
@@ -19,6 +23,29 @@ const ogImage = new URL(`${base}favicon.svg`, Astro.site);
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- Blocking (non-module) anti-flash script: sets data-theme before
+         first paint so navigating/reloading never flashes the default
+         Food Wars theme before switching to a saved choice (SPEC §7.1).
+         Mirrors src/lib/theme.ts's getInitialTheme() — duplicated inline
+         because it must run synchronously, before any `<script type=
+         "module">` would (those are deferred). Keep both in sync. -->
+    <script is:inline define:vars={{ STORAGE_KEY, THEMES }}>
+      (function () {
+        try {
+          var saved = localStorage.getItem(STORAGE_KEY);
+          var theme =
+            THEMES.indexOf(saved) !== -1
+              ? saved
+              : matchMedia('(prefers-color-scheme: dark)').matches
+                ? 'naruto'
+                : 'foodwars';
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {
+          /* localStorage/matchMedia unavailable — CSS falls back to the
+             Food Wars :root default (theme files' comment). */
+        }
+      })();
+    </script>
     <title>{title}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonicalURL} />

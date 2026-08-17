@@ -1,4 +1,6 @@
 ---
+import ThemeSwitcher from './ThemeSwitcher.astro';
+
 interface Props {
   active: 'home' | 'about' | 'experience' | 'projects';
 }
@@ -17,20 +19,23 @@ const links = [
 <nav class="site-nav" aria-label="Primary">
   <div class="container">
     <a class="brand" href={base}>Sudarshana Chaitanya B N</a>
-    <ul>
-      {
-        links.map((link) => (
-          <li>
-            <a
-              class="nav-link"
-              href={link.href}
-              aria-current={active === link.id ? 'page' : undefined}
-            >
-              {link.label}
-            </a>
-          </li>
-        ))
-      }
-    </ul>
+    <div class="nav-controls">
+      <ul>
+        {
+          links.map((link) => (
+            <li>
+              <a
+                class="nav-link"
+                href={link.href}
+                aria-current={active === link.id ? 'page' : undefined}
+              >
+                {link.label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+      <ThemeSwitcher />
+    </div>
   </div>
 </nav>

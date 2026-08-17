@@ -1,0 +1,57 @@
+---
+// Global 3-point theme slider (SPEC.md §7.1) — lives in Nav.astro so it's
+// present, in sync, and reachable identically on every page. A native
+// <input type="range"> gives keyboard stepping (arrow keys) and screen-
+// reader value announcement for free; the client script below just keeps
+// its position/aria-valuetext in sync with the active theme and persists
+// choices via src/lib/theme.ts.
+import { THEMES } from '../lib/theme';
+---
+
+<div class="theme-switcher">
+  <div class="theme-switcher-track">
+    <input
+      type="range"
+      id="theme-slider"
+      min="0"
+      max={THEMES.length - 1}
+      step="1"
+      value="0"
+      aria-label="Site theme"
+    />
+    <div class="theme-switcher-ticks" aria-hidden="true">
+      {THEMES.map(() => <span />)}
+    </div>
+  </div>
+  <span class="theme-switcher-label" id="theme-slider-label" aria-hidden="true">
+    Food Wars
+  </span>
+</div>
+
+<script>
+  import { THEMES, THEME_LABELS, applyTheme, getInitialTheme, isTheme } from '../lib/theme';
+
+  const slider = document.getElementById('theme-slider') as HTMLInputElement | null;
+  const label = document.getElementById('theme-slider-label');
+  if (slider) {
+    const sync = (index: number) => {
+      const theme = THEMES[index];
+      slider.value = String(index);
+      slider.setAttribute('aria-valuetext', THEME_LABELS[theme]);
+      if (label) label.textContent = THEME_LABELS[theme];
+    };
+
+    // The blocking script in Layout.astro already set data-theme before
+    // paint — just mirror it into the slider's position on load.
+    const current = document.documentElement.getAttribute('data-theme');
+    const initialIndex = THEMES.indexOf(isTheme(current) ? current : getInitialTheme());
+    sync(Math.max(initialIndex, 0));
+
+    slider.addEventListener('input', () => {
+      const index = Number(slider.value);
+      const theme = THEMES[index];
+      applyTheme(theme);
+      sync(index);
+    });
+  }
+</script>

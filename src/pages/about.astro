@@ -1,8 +1,47 @@
 ---
 import Layout from '../components/Layout.astro';
+import PixelMascot, { type MascotProp } from '../components/PixelMascot.astro';
+import ExtracurricularsBackground from '../components/ExtracurricularsBackground.astro';
 
 const base = import.meta.env.BASE_URL;
 const email = 'sudarshanab@iisc.ac.in';
+
+// Source: content/extracurriculars.md. One original chibi mascot per
+// entry (SPEC §7.6) — `prop` picks a small held icon loosely tied to the
+// activity (a trophy for a competition, a book for an academic club),
+// not a copy of any specific character's signature prop.
+const extracurriculars: { text: string; prop: MascotProp; label: string }[] = [
+  {
+    text: 'Convener, IISc Gymkhana Cricket Club — leading the club, organizing activities, and playing as an active cricketer.',
+    prop: 'trophy',
+    label: 'Mascot holding a trophy',
+  },
+  {
+    text: 'Mess Secretary (2024–2025) — managed and coordinated mess operations, logistics, and student concerns for a full year.',
+    prop: 'ladle',
+    label: 'Mascot holding a ladle',
+  },
+  {
+    text: 'Core Member, Databased (undergraduate club) — 2025.',
+    prop: 'book',
+    label: 'Mascot holding a book',
+  },
+  {
+    text: 'Event Volunteer, IISc Open Day (2025, 2026) — conducted a seminar on Chaotic Systems (2026) and demonstrated Semaphore-based systems (2025).',
+    prop: 'megaphone',
+    label: 'Mascot holding a megaphone',
+  },
+  {
+    text: 'Attended the Leanlang for Programming summer school at IISc (July 6–10, 2026).',
+    prop: 'scroll',
+    label: 'Mascot holding a scroll',
+  },
+  {
+    text: 'Active and engaged member of the Telugu community at IISc.',
+    prop: 'note',
+    label: 'Mascot holding a music note',
+  },
+];
 
 const skillGroups = [
   { label: 'Languages', items: ['Python'] },
@@ -98,16 +137,22 @@ const education = [
     </div>
   </section>
 
-  <!-- Extracurriculars -->
-  <section class="container">
+  <!-- Extracurriculars — the one deliberately playful spot on the site
+       (SPEC §7.6): a themed background layer plus one original chibi
+       pixel-art mascot per entry, both recolored (not redesigned) by the
+       active theme via the shared --mascot-*/--bg-decoration tokens. -->
+  <section class="container extracurriculars">
+    <ExtracurricularsBackground />
     <h2>Extracurriculars</h2>
-    <ul class="bullets">
-      <li>Convener, IISc Gymkhana Cricket Club — leading the club, organizing activities, and playing as an active cricketer.</li>
-      <li>Mess Secretary (2024–2025) — managed and coordinated mess operations, logistics, and student concerns for a full year.</li>
-      <li>Core Member, Databased (undergraduate club) — 2025.</li>
-      <li>Event Volunteer, IISc Open Day (2025, 2026) — conducted a seminar on Chaotic Systems (2026) and demonstrated Semaphore-based systems (2025).</li>
-      <li>Attended the Leanlang for Programming summer school at IISc (July 6–10, 2026).</li>
-      <li>Active and engaged member of the Telugu community at IISc.</li>
+    <ul class="extracurricular-list">
+      {
+        extracurriculars.map((item) => (
+          <li class="extracurricular-item">
+            <PixelMascot prop={item.prop} label={item.label} />
+            <p>{item.text}</p>
+          </li>
+        ))
+      }
     </ul>
   </section>
 

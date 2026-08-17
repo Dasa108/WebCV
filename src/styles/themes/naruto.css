@@ -1,0 +1,36 @@
+/* ============================================================================
+   Naruto — dark-mode theme. SPEC.md §7.3. Repurposed as the site's dark
+   mode rather than sitting alongside a separate light/dark toggle, per
+   §7.1 — its palette already reads as a night aesthetic.
+   ========================================================================= */
+:root[data-theme='naruto'] {
+  --color-bg: #1b1f2a; /* Shinobi Navy */
+  --color-surface: #242938; /* Deep Slate */
+  --color-text: #edeae3; /* Off-White */
+  --color-text-muted: #a9adb8;
+  --color-border: #333a4c;
+
+  --color-accent: #e8611c; /* Naruto Orange */
+  --color-accent-hover: #c74c10; /* Deep Orange */
+  --color-accent-2: #4fa8e8; /* Rasengan Blue */
+  --color-accent-rare: #d6a419; /* Sage Gold */
+  --color-on-accent: #1b1f2a;
+  --color-on-accent-2: #1b1f2a;
+  --color-on-accent-rare: #1b1f2a;
+  --color-steel: #9ca3af; /* Headband Steel — dividers/tree-trunk strokes */
+
+  --shadow: 0 1px 3px rgba(0, 0, 0, 0.35), 0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow-hover: 0 8px 24px rgba(0, 0, 0, 0.45);
+
+  /* Experience connector (§4): the original gnarled God-Tree/Ten-Tails trunk */
+  --color-connector-primary: #8f83b0; /* lighter lavender-grey so it reads against navy */
+  --color-connector-highlight: #c3bad9;
+  --color-connector-shadow: #241b33;
+
+  /* Extracurriculars mascots + background (§7.6) */
+  --mascot-primary: #e8611c;
+  --mascot-secondary: #4fa8e8;
+  --mascot-skin: #d9a066;
+  --mascot-outline: #edeae3;
+  --bg-decoration: #4fa8e8;
+}

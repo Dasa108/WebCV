@@ -1,0 +1,61 @@
+---
+// Naruto (dark mode) Experience connector — SPEC.md §4. The original
+// gnarled God-Tree/Ten-Tails trunk: thick at the top (most recent entry),
+// tapering to a root at the bottom (oldest), with thorn/barb accents.
+// Entirely abstract per SPEC §7 — organic shapes doing structural work,
+// no character/beast/eye imagery.
+import ExperienceCard from '../ExperienceCard.astro';
+import type { ExperienceEntry } from '../../lib/content';
+
+interface Props {
+  experience: ExperienceEntry[];
+}
+const { experience } = Astro.props;
+
+// One filled, jagged-edged tapering silhouette (thick top -> root bottom),
+// plus a few thorn/barb accents alternating sides.
+const trunkPath =
+  'M20,0 26,60 18,120 30,180 24,260 34,340 28,420 38,500 33,580 41,660 37,740 44,820 40,900 46,960 47,1000 ' +
+  'L54,1000 53,960 59,900 55,820 62,740 57,660 65,580 60,500 68,420 63,340 72,260 66,180 76,120 70,60 80,0 Z';
+const trunkThorns = [
+  '30,175 5,195 30,200',
+  '68,415 95,435 68,440',
+  '37,655 10,672 37,680',
+  '63,845 88,862 63,870',
+];
+
+// One reusable curve, drawn reaching from the trunk (local x=0) out to the
+// card (local x=48). Left-side items mirror it with CSS (`scaleX(-1)` on
+// `.tree-branch`) rather than duplicating the path.
+const branchPath = 'M2,20 C14,8 24,32 46,17';
+const branchThorn = '24,16 30,4 28,18';
+---
+
+<div class="tree tree--naruto">
+  <div class="tree-trunk" aria-hidden="true">
+    <svg viewBox="0 0 100 1000" preserveAspectRatio="none">
+      <path fill="var(--color-connector-primary)" d={trunkPath} />
+      {trunkThorns.map((points) => <polygon fill="var(--color-connector-primary)" points={points} />)}
+    </svg>
+  </div>
+  {
+    experience.map((entry, i) => (
+      <div class={`tree-item ${i % 2 === 0 ? 'tree-item--right' : 'tree-item--left'}`}>
+        <div class="tree-branch" aria-hidden="true">
+          <span class="tree-node" />
+          <svg viewBox="0 0 48 40" preserveAspectRatio="none">
+            <path
+              d={branchPath}
+              stroke="var(--color-connector-primary)"
+              stroke-width="6"
+              fill="none"
+              stroke-linecap="round"
+            />
+            <polygon points={branchThorn} fill="var(--color-connector-primary)" />
+          </svg>
+        </div>
+        <ExperienceCard entry={entry} />
+      </div>
+    ))
+  }
+</div>

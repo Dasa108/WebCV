@@ -1,33 +1,16 @@
 /* ============================================================================
-   Palette — three-anime blend, per SPEC.md §9.1. One accent per series
-   (Naruto / One Piece / Food Wars), each still passing WCAG AA as text.
-   Light mode is the :root default; dark mode overrides via
-   prefers-color-scheme (SPEC §9.3).
+   Theme tokens live in src/styles/themes/{foodwars,naruto,fairytail}.css
+   (imported by Layout.astro, before this file) — three full sets of the
+   same CSS custom properties, swapped via a `data-theme` attribute on
+   <html> (SPEC.md §7.1). Only color tokens vary; every rule below reuses
+   the same token names regardless of which theme is active, so spacing/
+   type/card/button geometry stays identical across all three (§7.5).
    ========================================================================= */
 :root {
-  /* accents */
-  --color-accent: #e8611c; /* Naruto Orange — the one recurring brand color */
-  --color-accent-hover: #c74c10; /* Naruto Deep Orange */
-  --color-accent-2: #8a6116; /* One Piece Straw Hat Gold — sparing use */
-  --color-accent-rare: #c81e3a; /* Food Wars Shokugeki Crimson — rare/featured use only */
-  --color-steel: #9ca3af; /* Headband Steel (Naruto) — dividers/borders */
-
-  /* base pair: light mode */
-  --color-bg: #fbf6ee; /* Scroll Cream */
-  --color-surface: #ffffff; /* Warm White */
-  --color-text: #232323; /* Ink */
-  --color-text-muted: #5b5b5b;
-  --color-border: #e7ded0;
-
-  --color-on-accent: #fbf6ee; /* text placed on top of the orange accent */
-  --color-tendril: #241b33; /* Experience-tree trunk/branches — Ten-Tails/Infinite-Tsukuyomi accent, light mode */
-
   --font-heading: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --font-body: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 
   --radius: 12px;
-  --shadow: 0 1px 3px rgba(27, 31, 42, 0.08), 0 1px 2px rgba(27, 31, 42, 0.06);
-  --shadow-hover: 0 8px 24px rgba(27, 31, 42, 0.12);
 
   --container-width: 1080px;
   --space-1: 0.5rem;
@@ -35,22 +18,6 @@
   --space-3: 1.5rem;
   --space-4: 2.5rem;
   --space-5: 4rem;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    /* base pair: dark mode — Shinobi Navy / Grand Line night-sea background,
-       Deep Slate surfaces */
-    --color-bg: #1b1f2a;
-    --color-surface: #242938;
-    --color-text: #edeae3; /* Off-White */
-    --color-text-muted: #a9adb8;
-    --color-border: #333a4c;
-    --shadow: 0 1px 3px rgba(0, 0, 0, 0.35), 0 1px 2px rgba(0, 0, 0, 0.3);
-    --shadow-hover: 0 8px 24px rgba(0, 0, 0, 0.45);
-    --color-tendril: #8f83b0; /* lighter lavender-grey so the tree reads against navy */
-    /* all three accents stay the same in both modes, per SPEC §9.3 */
-  }
 }
 
 /* ============================================================================
@@ -73,6 +40,20 @@ body {
   font-family: var(--font-body);
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+/* Every themed surface gets the same soft cross-fade on a theme switch,
+   instead of colors snapping instantly (still "instant" per SPEC §4 — a
+   couple hundred ms reads as instant, not as a page reflow). */
+a,
+.card,
+.btn,
+.badge,
+.tag-list li,
+.site-nav,
+.site-footer {
+  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 img {
@@ -180,6 +161,8 @@ section + section {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-3);
   padding-block: var(--space-2);
 }
 .site-nav .brand {
@@ -190,6 +173,12 @@ section + section {
 .site-nav .brand:hover {
   color: var(--color-text);
   text-decoration: none;
+}
+.nav-controls {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  flex-wrap: wrap;
 }
 .site-nav ul {
   list-style: none;
@@ -296,12 +285,16 @@ a.card:hover {
   letter-spacing: 0.03em;
   padding: 0.2rem 0.6rem;
   border-radius: 999px;
-  background: color-mix(in srgb, var(--color-accent-2) 18%, transparent);
-  color: var(--color-accent-2);
+  /* Solid fill + a per-theme on-color, not tinted-bg + colored-text: the
+     secondary/rare accents are saturated mid-tones that read fine as fills
+     but fail WCAG AA as small text on a light tint (SPEC §8.3 — verified
+     per theme, not assumed from the §7 tables alone). */
+  background: var(--color-accent-2);
+  color: var(--color-on-accent-2);
 }
 .badge-featured {
-  background: color-mix(in srgb, var(--color-accent-rare) 18%, transparent);
-  color: var(--color-accent-rare);
+  background: var(--color-accent-rare);
+  color: var(--color-on-accent-rare);
 }
 
 .tag-list {
@@ -361,24 +354,37 @@ a.card:hover {
 }
 
 /* ============================================================================
-   Experience tree — entries hang off a central gnarled trunk that alternates
-   branches left/right, instead of a plain connector line: a bolder, more
-   literal nod to the God-Tree/Ten-Tails from the Infinite Tsukuyomi arc
-   (thick at the top, tapering to a root at the bottom, with thorn/barb
-   accents) — still entirely abstract per SPEC §9 (organic shapes doing
-   structural work, no character/beast/eye imagery). Both the trunk and the
-   branch SVGs are inline and colored via --color-tendril, so light/dark
-   mode fall out of the existing token system for free (no duplicate assets).
+   Experience connector — entries hang off a central spine that alternates
+   branches left/right, instead of a plain connector line. The *shape* of
+   the spine/branch changes with the active theme (SPEC §4): a gnarled
+   God-Tree/Ten-Tails trunk (Naruto), a glossy melted-butter ribbon (Food
+   Wars), or a chain of elemental magic orbs on a glowing line (Fairy
+   Tail) — see src/components/connectors/*.astro. All three reuse this one
+   grid/positioning system; only the inline SVG artwork inside `.tree-trunk`
+   /`.tree-branch`/`.tree-node` differs per theme. All three variants render
+   into the DOM at once (experience.astro) and this file picks exactly one
+   via `[data-theme]`, so switching themes needs no JS re-render (§7.1).
 
-   Layout: `.tree-item` is a 3-column grid (card / branch / card); the trunk
-   is absolutely centered over the middle column, so left/right cards line
-   up against it regardless of how tall any given card is. Below 768px
-   (SPEC §8.1) it collapses to a single-side shape: trunk pinned left,
-   branch unmirrored, card always in the second column.
+   Layout: `.tree-item` is a 3-column grid (card / branch / card); the
+   spine is absolutely centered over the middle column, so left/right
+   cards line up against it regardless of how tall any given card is.
+   Below 768px (SPEC §6) it collapses to a single-side shape: spine pinned
+   left, branch unmirrored, card always in the second column.
    ========================================================================= */
 .tree {
   position: relative;
 }
+.tree--foodwars,
+.tree--naruto,
+.tree--fairytail {
+  display: none;
+}
+:root[data-theme='foodwars'] .tree--foodwars,
+:root[data-theme='naruto'] .tree--naruto,
+:root[data-theme='fairytail'] .tree--fairytail {
+  display: block;
+}
+
 .tree-trunk {
   position: absolute;
   left: 50%;
@@ -393,6 +399,7 @@ a.card:hover {
   width: 100%;
   height: 100%;
   display: block;
+  overflow: visible;
 }
 
 .tree-item {
@@ -412,6 +419,7 @@ a.card:hover {
 .tree-branch svg {
   display: block;
   width: 100%;
+  overflow: visible;
 }
 .tree-item--right .card {
   grid-column: 3;
@@ -435,6 +443,24 @@ a.card:hover {
   box-shadow: 0 0 0 3px var(--color-bg);
   z-index: 1;
 }
+/* Left-side items mirror the branch via scaleX(-1); undo that on the node
+   so its drop-shadow/ring stays circular instead of flipping with it. */
+.tree-item--left .tree-node {
+  transform: translateY(-50%) scaleX(-1);
+}
+/* Fairy Tail: each node is an elemental orb (fire/water/ice/lightning,
+   cycled by entry index — SPEC §4) instead of a plain accent dot, with a
+   soft matching glow. Color set inline per item via --orb-color. */
+.tree-node--orb {
+  background: var(--orb-color, var(--color-accent));
+  box-shadow: 0 0 0 3px var(--color-bg), 0 0 10px 2px var(--orb-color, var(--color-accent));
+}
+/* Food Wars: each node reads as a small pooling drip of butter. */
+.tree-node--drip {
+  background: var(--color-connector-primary);
+  border-radius: 45% 55% 55% 45% / 55% 55% 45% 45%;
+  box-shadow: 0 0 0 3px var(--color-bg), inset 0 -2px 2px rgba(0, 0, 0, 0.15);
+}
 
 @media (max-width: 768px) {
   .tree-trunk {
@@ -449,6 +475,9 @@ a.card:hover {
   .tree-item--right .tree-branch {
     grid-column: 1;
     transform: none;
+  }
+  .tree-item--left .tree-node {
+    transform: translateY(-50%);
   }
   .tree-item--left .card,
   .tree-item--right .card {
@@ -518,4 +547,163 @@ a.card:hover {
 .skip-link:focus {
   left: 0;
   top: 0;
+}
+
+/* ============================================================================
+   Theme switcher (SPEC §7.1) — a single global 3-point slider living in
+   Nav.astro. Built on a native <input type="range"> (min=0/max=2/step=1)
+   so arrow-key stepping between stops and value announcement to screen
+   readers come for free; everything below is visual restyling of that
+   native control plus the three tick labels next to it.
+   ========================================================================= */
+.theme-switcher {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+}
+.theme-switcher-track {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 5.5rem;
+}
+.theme-switcher input[type='range'] {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 44px; /* tap target, SPEC §6 */
+  margin: 0;
+  background: transparent;
+  cursor: pointer;
+}
+.theme-switcher input[type='range']::-webkit-slider-runnable-track {
+  height: 6px;
+  border-radius: 999px;
+  background: linear-gradient(
+    to right,
+    var(--color-accent) 0%,
+    var(--color-accent) 50%,
+    var(--color-border) 50%,
+    var(--color-border) 100%
+  );
+}
+.theme-switcher input[type='range']::-moz-range-track {
+  height: 6px;
+  border-radius: 999px;
+  background: var(--color-border);
+}
+.theme-switcher input[type='range']::-moz-range-progress {
+  height: 6px;
+  border-radius: 999px;
+  background: var(--color-accent);
+}
+.theme-switcher input[type='range']::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  margin-top: -7px;
+  border-radius: 50%;
+  background: var(--color-accent);
+  border: 2px solid var(--color-on-accent);
+  box-shadow: var(--shadow);
+}
+.theme-switcher input[type='range']::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--color-accent);
+  border: 2px solid var(--color-on-accent);
+  box-shadow: var(--shadow);
+}
+.theme-switcher input[type='range']:focus-visible {
+  outline: 2px solid var(--color-accent-2);
+  outline-offset: 2px;
+  border-radius: 999px;
+}
+.theme-switcher-ticks {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  pointer-events: none;
+}
+.theme-switcher-ticks span {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--color-on-accent);
+  opacity: 0.7;
+}
+.theme-switcher-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--color-text-muted);
+  min-width: 4.4rem;
+}
+
+@media (max-width: 480px) {
+  .theme-switcher-label {
+    display: none;
+  }
+}
+
+/* ============================================================================
+   Extracurriculars — chibi pixel-art mascots + themed background decoration
+   (SPEC §7.6). The section itself carries the site's usual professional
+   whitespace; the mascots/background are the one deliberately playful spot.
+   ========================================================================= */
+.extracurriculars {
+  position: relative;
+  isolation: isolate;
+}
+.extracurriculars-bg {
+  position: absolute;
+  inset: -1.5rem;
+  z-index: -1;
+  overflow: hidden;
+  pointer-events: none;
+  opacity: 0.16;
+}
+.extracurriculars-bg svg {
+  width: 100%;
+  height: 100%;
+}
+.extracurriculars-bg > * {
+  display: none;
+}
+:root[data-theme='foodwars'] .extracurriculars-bg > .bg--foodwars,
+:root[data-theme='naruto'] .extracurriculars-bg > .bg--naruto,
+:root[data-theme='fairytail'] .extracurriculars-bg > .bg--fairytail {
+  display: block;
+}
+
+.extracurricular-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+.extracurricular-item {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  padding: var(--space-2);
+  box-shadow: var(--shadow);
+}
+.mascot {
+  flex: 0 0 auto;
+  width: 44px;
+  height: 52px;
+  display: block;
+}
+.extracurricular-item p {
+  margin: 0;
+  align-self: center;
 }

@@ -1,0 +1,104 @@
+---
+// Original chibi-proportioned pixel-art mascot, one per extracurricular
+// entry (SPEC.md §7.6). Every mascot shares the exact same 40x48 sprite
+// grid, outline weight, and blocky "big head / small body" silhouette —
+// only the small held prop differs per activity, and colors come entirely
+// from theme tokens (--mascot-*), so switching themes recolors the whole
+// roster for free without swapping in different figures (§7.6 "theme
+// recoloring, not redesign"). No hairstyle/outfit/insignia is copied from
+// any specific character — this is an original silhouette in a popular
+// style, not a redrawn existing one.
+export type MascotProp = 'trophy' | 'ladle' | 'book' | 'megaphone' | 'scroll' | 'note';
+
+interface Props {
+  prop: MascotProp;
+  label: string;
+}
+const { prop, label } = Astro.props;
+---
+
+<svg class="mascot" viewBox="0 0 40 48" role="img" aria-label={label} shape-rendering="crispEdges">
+  <!-- legs -->
+  <rect x="12" y="38" width="6" height="8" fill="var(--mascot-outline)" />
+  <rect x="22" y="38" width="6" height="8" fill="var(--mascot-outline)" />
+  <!-- body -->
+  <rect
+    x="10"
+    y="22"
+    width="20"
+    height="16"
+    rx="2"
+    fill="var(--mascot-primary)"
+    stroke="var(--mascot-outline)"
+    stroke-width="2"
+  />
+  <!-- arms -->
+  <rect x="3" y="24" width="7" height="9" rx="1.5" fill="var(--mascot-secondary)" stroke="var(--mascot-outline)" stroke-width="1.5" />
+  <rect x="30" y="24" width="7" height="9" rx="1.5" fill="var(--mascot-secondary)" stroke="var(--mascot-outline)" stroke-width="1.5" />
+  <!-- head -->
+  <rect
+    x="8"
+    y="2"
+    width="24"
+    height="22"
+    rx="3"
+    fill="var(--mascot-skin)"
+    stroke="var(--mascot-outline)"
+    stroke-width="2"
+  />
+  <!-- eyes -->
+  <circle cx="16" cy="14" r="1.8" fill="var(--mascot-outline)" />
+  <circle cx="24" cy="14" r="1.8" fill="var(--mascot-outline)" />
+
+  <!-- prop, held near the right hand -->
+  {
+    prop === 'trophy' && (
+      <g transform="translate(29,15)">
+        <rect x="1" y="4" width="6" height="5" fill="var(--mascot-secondary)" stroke="var(--mascot-outline)" stroke-width="1" />
+        <rect x="0" y="2" width="8" height="3" fill="var(--mascot-secondary)" stroke="var(--mascot-outline)" stroke-width="1" />
+        <rect x="3" y="9" width="2" height="2" fill="var(--mascot-outline)" />
+      </g>
+    )
+  }
+  {
+    prop === 'ladle' && (
+      <g transform="translate(29,13)">
+        <circle cx="3" cy="3" r="3" fill="var(--mascot-secondary)" stroke="var(--mascot-outline)" stroke-width="1" />
+        <rect x="2" y="6" width="2" height="7" fill="var(--mascot-outline)" />
+      </g>
+    )
+  }
+  {
+    prop === 'book' && (
+      <g transform="translate(28,15)">
+        <rect x="0" y="0" width="9" height="7" fill="var(--mascot-secondary)" stroke="var(--mascot-outline)" stroke-width="1" />
+        <rect x="4" y="0" width="1" height="7" fill="var(--mascot-outline)" />
+      </g>
+    )
+  }
+  {
+    prop === 'megaphone' && (
+      <g transform="translate(28,15)">
+        <path d="M0,3 L6,0 L6,8 L0,5 Z" fill="var(--mascot-secondary)" stroke="var(--mascot-outline)" stroke-width="1" />
+        <rect x="6" y="2" width="4" height="4" fill="var(--mascot-secondary)" stroke="var(--mascot-outline)" stroke-width="1" />
+      </g>
+    )
+  }
+  {
+    prop === 'scroll' && (
+      <g transform="translate(28,15)">
+        <rect x="0" y="1" width="9" height="6" rx="1.5" fill="var(--mascot-secondary)" stroke="var(--mascot-outline)" stroke-width="1" />
+        <line x1="2" y1="4" x2="7" y2="4" stroke="var(--mascot-outline)" stroke-width="1" />
+      </g>
+    )
+  }
+  {
+    prop === 'note' && (
+      <g transform="translate(29,13)">
+        <circle cx="2" cy="9" r="2.2" fill="var(--mascot-secondary)" stroke="var(--mascot-outline)" stroke-width="1" />
+        <rect x="3.8" y="0" width="1.6" height="9" fill="var(--mascot-outline)" />
+        <rect x="3.8" y="0" width="5" height="2.5" fill="var(--mascot-outline)" />
+      </g>
+    )
+  }
+</svg>

@@ -1,0 +1,62 @@
+---
+// Food Wars Experience connector — SPEC.md §4. A glossy stream of melted
+// butter running down the page in place of the trunk: a warm golden
+// ribbon with a soft highlight/sheen gradient and small pooling "drips"
+// at each entry, alternating left/right the same way the tree's branches
+// do (TreeConnector.astro).
+import ExperienceCard from '../ExperienceCard.astro';
+import type { ExperienceEntry } from '../../lib/content';
+
+interface Props {
+  experience: ExperienceEntry[];
+}
+const { experience } = Astro.props;
+
+// A gently wavy vertical ribbon (two offset wavy edges, closed into one
+// filled shape) rather than a straight bar — reads as a poured/flowing
+// stream. Stretches to the container's real height via CSS regardless of
+// entry count, same trick as the tree trunk.
+const ribbonPath =
+  'M38,0 C10,120 10,180 34,260 C58,340 58,400 30,500 C6,580 6,650 34,740 C58,820 58,880 38,1000 ' +
+  'L62,1000 C82,880 82,820 58,740 C30,650 30,580 54,500 C82,400 82,340 58,260 C34,180 34,120 62,0 Z';
+
+// Same reusable branch curve as the tree connector, so left/right cards
+// line up identically regardless of active theme.
+const branchPath = 'M2,20 C14,8 24,32 46,17';
+---
+
+<div class="tree tree--foodwars">
+  <div class="tree-trunk" aria-hidden="true">
+    <svg viewBox="0 0 100 1000" preserveAspectRatio="none">
+      <defs>
+        <linearGradient id="butter-sheen" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0%" stop-color="var(--color-connector-shadow)" />
+          <stop offset="35%" stop-color="var(--color-connector-primary)" />
+          <stop offset="55%" stop-color="var(--color-connector-highlight)" />
+          <stop offset="75%" stop-color="var(--color-connector-primary)" />
+          <stop offset="100%" stop-color="var(--color-connector-shadow)" />
+        </linearGradient>
+      </defs>
+      <path fill="url(#butter-sheen)" d={ribbonPath} />
+    </svg>
+  </div>
+  {
+    experience.map((entry, i) => (
+      <div class={`tree-item ${i % 2 === 0 ? 'tree-item--right' : 'tree-item--left'}`}>
+        <div class="tree-branch" aria-hidden="true">
+          <span class="tree-node tree-node--drip" />
+          <svg viewBox="0 0 48 40" preserveAspectRatio="none">
+            <path
+              d={branchPath}
+              stroke="var(--color-connector-primary)"
+              stroke-width="6"
+              fill="none"
+              stroke-linecap="round"
+            />
+          </svg>
+        </div>
+        <ExperienceCard entry={entry} />
+      </div>
+    ))
+  }
+</div>

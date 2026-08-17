@@ -1,0 +1,55 @@
+---
+// Fairy Tail Experience connector — SPEC.md §4. A chain of abstract
+// elemental magic circles/orbs (fire, water, ice, lightning) connecting
+// entries, linked by a thin glowing line — each entry's orb colored by
+// its element, no guild emblem or character silhouettes. The "chain"
+// reads naturally because each item's orb (.tree-node--orb, styled in
+// global.css) sits right where its branch meets the line, the same way
+// the tree's node dots do.
+import ExperienceCard from '../ExperienceCard.astro';
+import type { ExperienceEntry } from '../../lib/content';
+
+interface Props {
+  experience: ExperienceEntry[];
+}
+const { experience } = Astro.props;
+
+// Thin center line, gently curved. Drawn three times with increasing
+// width/decreasing opacity behind the crisp core line to fake a soft glow
+// without relying on an SVG filter (filters can clip unpredictably when
+// stretched by preserveAspectRatio="none").
+const linePath = 'M50,0 C46,250 54,500 46,750 C42,880 54,950 50,1000';
+
+// Same reusable branch curve as the other two connectors.
+const branchPath = 'M2,20 C14,8 24,32 46,17';
+
+const elements = ['fire', 'water', 'ice', 'lightning'] as const;
+---
+
+<div class="tree tree--fairytail">
+  <div class="tree-trunk" aria-hidden="true">
+    <svg viewBox="0 0 100 1000" preserveAspectRatio="none">
+      <path d={linePath} stroke="var(--color-connector-primary)" stroke-width="10" fill="none" opacity="0.12" />
+      <path d={linePath} stroke="var(--color-connector-primary)" stroke-width="5" fill="none" opacity="0.25" />
+      <path d={linePath} stroke="var(--color-connector-primary)" stroke-width="1.5" fill="none" opacity="0.9" />
+    </svg>
+  </div>
+  {
+    experience.map((entry, i) => {
+      const orbVar = `var(--elem-${elements[i % elements.length]})`;
+      return (
+        <div class={`tree-item ${i % 2 === 0 ? 'tree-item--right' : 'tree-item--left'}`}>
+          <div class="tree-branch" aria-hidden="true">
+            <span class="tree-node tree-node--orb" style={`--orb-color: ${orbVar}`} />
+            <svg viewBox="0 0 48 40" preserveAspectRatio="none">
+              <path d={branchPath} stroke={orbVar} stroke-width="2" fill="none" stroke-linecap="round" opacity="0.85" />
+              <circle cx="4" cy="20" r="7" fill="none" stroke={orbVar} stroke-width="1.2" opacity="0.6" />
+              <circle cx="4" cy="20" r="3" fill={orbVar} />
+            </svg>
+          </div>
+          <ExperienceCard entry={entry} />
+        </div>
+      );
+    })
+  }
+</div>
