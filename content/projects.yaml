@@ -37,7 +37,7 @@
   links:
     repo: null       # private repo — intentionally no link (per PLAN.md §2)
     demo: null
-    report: "documents/Final_Report_VerifyTheVector.pdf"
+    report: null     # full report intentionally unlinked from the page (2026-08-17)
     slides: null
   thumbnail: null    # no thumbnail for now (per PLAN.md §2)
   featured: true

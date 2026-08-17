@@ -270,6 +270,23 @@ a.card:hover {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: var(--space-3);
+  align-items: stretch;
+}
+/* Cards in a grid (Highlights on Home, Skills on About, Projects grid)
+   often hold a different amount of text — without this, a card's trailing
+   "See all …" link lands at a different height on every card, reading as
+   misaligned even though the cards themselves are the same height. Making
+   each card a column flex box and pinning its last .meta to the bottom
+   keeps every row's CTAs on one line regardless of how much text is above
+   them. */
+.card-grid .card {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+.card-grid .card > .meta:last-child {
+  margin-top: auto;
+  padding-top: var(--space-1);
 }
 .card-list {
   display: flex;
