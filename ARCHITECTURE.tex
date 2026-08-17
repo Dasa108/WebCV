@@ -432,21 +432,36 @@ or merged into something else)?
   The \emph{only} place YAML is touched --- single source of truth for
   ``what an experience/project entry looks like.'' See
   \S\ref{sec:codewalkthrough}. \\[6pt]
+\file{src/lib/theme.ts} &
+  The theme list/labels, \texttt{localStorage} key, and
+  \texttt{applyTheme()}/\texttt{getInitialTheme()} helpers. &
+  One typed source of truth for ``what themes exist'' that both
+  \texttt{ThemeSwitcher.astro} and \texttt{Layout.astro}'s anti-flash
+  script agree on --- see \S\ref{sec:theming}. \\[6pt]
 \file{src/styles/global.css} &
-  Design tokens (CSS custom properties), dark mode, responsive base
-  styles. &
-  One place to define color/spacing \emph{by role}; every component
-  reuses the same tokens instead of hardcoding values --- see
-  \S\ref{sec:codewalkthrough}. \\[6pt]
+  Shared design tokens by \emph{name} (layout/type/spacing/card/button/
+  connector/mascot rules), responsive base styles. &
+  One place to define \emph{how} something looks by role; every theme
+  file (below) supplies the actual color \emph{values} for those same
+  role names --- see \S\ref{sec:theming}. \\[6pt]
+\file{src/styles/themes/\{foodwars,naruto,fairytail\}.css} &
+  One CSS custom-property set per theme, scoped under
+  \texttt{:root[data-theme='\ldots']}. &
+  Adding a fourth theme later means adding one more file with the same
+  token names --- zero changes to any component. See \S\ref{sec:theming}. \\[6pt]
 \file{src/components/Layout.astro} &
   Page shell: \texttt{<html>/<head>} boilerplate, meta tags, Open Graph
-  tags, nav, footer, \texttt{<slot />}. &
+  tags, nav, footer, \texttt{<slot />} --- and the blocking anti-flash
+  theme script (\S\ref{sec:theming}). &
   Written once, so every page gets consistent SEO/meta handling instead
   of duplicating \texttt{<head>} content five times. \\[6pt]
 \file{src/components/Nav.astro} &
-  Site navigation, active-page highlighting. &
+  Site navigation, active-page highlighting, and the shared
+  \texttt{<ThemeSwitcher>} instance. &
   Builds links from \texttt{import.meta.env.BASE\_URL} rather than a
-  hardcoded path, so it keeps working if the deploy target changes. \\[6pt]
+  hardcoded path, so it keeps working if the deploy target changes; one
+  \texttt{<ThemeSwitcher>} here means the slider is identical and in sync
+  on every page. \\[6pt]
 \file{src/components/Footer.astro} &
   Site footer. &
   Shared chrome, same reasoning as \texttt{Layout.astro}. \\[6pt]
@@ -455,12 +470,43 @@ or merged into something else)?
   Render one experience/project entry as a card. &
   Take one typed entry as a prop and know nothing about \emph{how many}
   times they're used --- the page does the looping (\S\ref{sec:contentmodel}). \\[6pt]
+\file{src/components/ThemeSwitcher.astro} &
+  The global 3-point theme slider: a native \texttt{<input type="range">}
+  plus a client script that writes \texttt{data-theme} and persists the
+  choice. &
+  A native form control gives keyboard stepping and screen-reader
+  announcement for free --- see \S\ref{sec:theming}. \\[6pt]
+\file{src/components/connectors/\{Tree,Butter,Magic\}Connector.astro} &
+  One self-contained Experience-page connector per theme (spine + branch
+  artwork + the \texttt{ExperienceCard}s themselves). &
+  All three render at once; CSS shows only the one matching the active
+  theme --- re-theming this page needs zero JavaScript. See
+  \S\ref{sec:connectors}. \\[6pt]
+\file{src/components/PixelMascot.astro} &
+  One shared 40$\times$48 chibi pixel-art sprite, prop varies per
+  extracurricular entry. &
+  Colors come entirely from theme tokens, so a theme switch recolors the
+  whole roster without redrawing it --- see \S\ref{sec:mascots}. \\[6pt]
+\file{src/components/ExtracurricularsBackground.astro} &
+  Faint theme-matched decorative layer behind the Extracurriculars
+  section. &
+  Same show-one-hide-two-by-\texttt{data-theme} technique as the
+  connectors (\S\ref{sec:mascots}). \\[6pt]
 \file{src/pages/index.astro} &
-  The homepage: hero, about, skills, highlights, extracurriculars,
-  contact. &
-  Astro's file-based routing --- this file \emph{is} the route \texttt{/}. \\[6pt]
+  The homepage: hero, About teaser, Highlights (top Experience/Project
+  picks), Contact. &
+  Astro's file-based routing --- this file \emph{is} the route \texttt{/}.
+  The fuller bio/education/skills/extracurriculars live on
+  \texttt{about.astro} instead, so Home stays a fast overview. \\[6pt]
+\file{src/pages/about.astro} &
+  The \texttt{/about} page: full bio, education table, skills by
+  category, Extracurriculars (with mascots + background, \S\ref{sec:mascots}). &
+  Split out from Home so the landing view stays short while this page
+  carries the depth --- also convertible on its own if someone lands here
+  directly (e.g.\ from a search engine). \\[6pt]
 \file{src/pages/experience.astro} &
-  The \texttt{/experience} page: loops over \texttt{getExperience()}. &
+  The \texttt{/experience} page: loops over \texttt{getExperience()},
+  rendered through all three themed connectors (\S\ref{sec:connectors}). &
   One template, however many entries currently exist --- see
   \S\ref{sec:codewalkthrough}. \\[6pt]
 \file{src/pages/projects/index.astro} &
@@ -530,25 +576,34 @@ lists projects (the same ``single source of truth'' principle from
 sortable/parseable machine format in the YAML but shown in a
 human-readable format on the page.
 
-\subsection{\texttt{src/components/} --- Layout, Nav, Footer, Cards}
+\subsection{\texttt{src/components/} --- Layout, Nav, Footer, Cards, Theming}
 
 \begin{itemize}[leftmargin=1.4em]
   \item \textbf{\texttt{Layout.astro}} is the page shell every page
   wraps itself in: emits \texttt{<html>/<head>} boilerplate once (meta
   tags, favicon, Open Graph tags for link previews, canonical URL for
   SEO), then renders \texttt{<Nav>}, \texttt{<slot />} (the page's own
-  content), then \texttt{<Footer>}.
+  content), then \texttt{<Footer>}. It's also where the blocking
+  anti-flash theme script lives --- see \S\ref{sec:theming}.
   \item \textbf{\texttt{Nav.astro}} builds its links from
   \texttt{import.meta.env.BASE\_URL} rather than hardcoding
   \texttt{/WebCV/...}, so the same code works whether the site is
   deployed at a subpath or a domain root. It marks the current page with
   \texttt{aria-current="page"} --- an accessibility attribute screen
-  readers announce, which is also what the CSS uses to draw the orange
-  underline.
+  readers announce, which is also what the CSS keys off to draw the
+  active-page underline in the active theme's accent color. It also
+  renders \texttt{<ThemeSwitcher>} once, shared across every page.
   \item \textbf{\texttt{ExperienceCard.astro} / \texttt{ProjectCard.astro}}
   each take one entry as a prop and render it, with no knowledge of how
   many times they're used --- the pages loop and call them once per
   entry.
+  \item \textbf{\texttt{ThemeSwitcher.astro}},
+  \texttt{connectors/\{Tree,Butter,Magic\}Connector.astro},
+  \texttt{PixelMascot.astro}, \texttt{ExtracurricularsBackground.astro}
+  are all new since the original build --- the theme system and its two
+  themed page elements, covered in \S\ref{sec:theming}--\ref{sec:mascots}
+  since each makes its own distinct design decision worth explaining on
+  its own.
 \end{itemize}
 
 \subsection{\texttt{src/pages/} --- File-Based Routing and the Dynamic-Route Trick}
@@ -577,43 +632,99 @@ third HTML file automatically --- no route to register, because the
 route was never ``projects/verifythevector,'' it was always ``however
 many projects exist.''
 
-\subsection{\texttt{src/styles/global.css} --- Design Tokens, Dark Mode, Responsiveness}
+\subsection{The Theme System --- Three Palettes, One Switch, Zero Re-render}
+\label{sec:theming}
 
-The palette (a three-anime blend --- Naruto orange primary accent,
-navy/cream base pair, sparing One Piece gold / Food Wars crimson
-accents; exact colors and reasoning in \texttt{SPEC.md} \S9.1) is
-implemented as CSS custom properties, not hardcoded hex values scattered
-through the stylesheet:
+This is the second-most-important design decision in the project, after
+the content model (\S\ref{sec:contentmodel}).
+
+\textbf{The requirement} (\texttt{SPEC.md} \S7): not a light/dark toggle,
+but three named, switchable themes --- Food Wars (default, light), Naruto
+(repurposed as the dark mode, since its palette already reads as a night
+aesthetic), Fairy Tail (an alternate) --- controlled by one slider that
+lives in the nav and applies to the whole site instantly, with the choice
+remembered across reloads and page navigation.
+
+\textbf{The token layer is the same idea as before, just leveled up.} The
+original site had one palette with a \texttt{prefers-color-scheme: dark}
+override --- two states. Extending that to \emph{three arbitrary named
+states} means the states can no longer be selected by a media query
+(there's no ``prefers-fairy-tail'' signal from the OS) --- they need an
+explicit switch. The mechanism is a \texttt{data-theme} HTML attribute on
+\texttt{<html>}, and one CSS file per theme
+(\texttt{src/styles/themes/\{foodwars,naruto,fairytail\}.css}), each
+scoping the exact same token names under a different attribute selector:
 
 \begin{lstlisting}
-:root {
-  --color-accent: #e8611c;
-  --color-bg: #fbf6ee;
-  --color-text: #232323;
-  /* ...more tokens... */
-}
+/* foodwars.css */
+:root, :root[data-theme='foodwars'] { --color-bg: #fff9f0; --color-accent: #e8283f; }
+/* naruto.css */
+:root[data-theme='naruto']          { --color-bg: #1b1f2a; --color-accent: #e8611c; }
+/* fairytail.css */
+:root[data-theme='fairytail']       { --color-bg: #241b3a; --color-accent: #ff6b4a; }
+\end{lstlisting}
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --color-bg: #1b1f2a;
-    --color-text: #edeae3;
-    /* accent orange is NOT redefined -- stays the same in both modes */
-  }
+\texttt{global.css} still never hardcodes a color --- it just references
+\texttt{var(--color-bg)}, \texttt{var(--color-accent)}, etc., exactly as
+before. Because all three theme files define the \emph{same token
+names}, none of that shared CSS needs to know which theme is active;
+whichever \texttt{[data-theme='\ldots']} block matches the attribute on
+\texttt{<html>} is what the browser resolves the variable to. Adding a
+fourth theme later would mean adding one more CSS file with the same
+token names --- zero changes to any component.
+
+\textbf{Making the switch:} \texttt{ThemeSwitcher.astro} renders a native
+\texttt{<input type="range">} (3 stops: \texttt{min=0 max=2 step=1})
+instead of a hand-built slider widget --- deliberately, because a native
+form control gives keyboard support (arrow keys move between stops) and
+screen-reader value announcement for free, which a \texttt{<div>}-based
+custom slider would have to reimplement by hand. Its \texttt{input}
+handler calls \texttt{applyTheme()} (\texttt{src/lib/theme.ts}), which
+does exactly two things:
+
+\begin{lstlisting}
+export function applyTheme(theme: Theme): void {
+  document.documentElement.setAttribute('data-theme', theme);
+  localStorage.setItem(STORAGE_KEY, theme);
 }
 \end{lstlisting}
 
-Every component then uses \texttt{var(--color-bg)} etc. instead of a
-literal color --- a \textbf{design-token system}: define each
-color/size once, by role (``background,'' ``accent,'' ``border'')
-rather than by value, then reference the role everywhere. The payoff:
-dark mode is a $\sim$10-line override block, not a second copy of every
-color rule, because only the \emph{tokens} change; every rule using
-\texttt{var(--color-bg)} picks up the new value automatically. This also
-respects the visitor's OS-level light/dark preference automatically via
-the \texttt{prefers-color-scheme} media query, with no toggle button or
-JavaScript required.
+That's the entire ``re-theme the page'' operation --- one attribute
+write. There's no JavaScript that walks the DOM repainting elements;
+every rule in every stylesheet that reads a \texttt{var(--color-*)} token
+re-resolves automatically the instant the attribute changes, because
+that's how CSS custom property inheritance works. Same lesson as the
+original design-token system, just scaled from ``one override block'' to
+``three swappable stylesheets.''
 
-Responsiveness follows the same ``define once'' instinct: layout uses
+\textbf{Avoiding a flash of the wrong theme on load:} the saved theme has
+to be applied \emph{before} the browser's first paint, or a returning
+visitor who picked Fairy Tail would see a flash of Food Wars (the CSS
+default) before JavaScript corrects it. The fix is a classic
+\textbf{blocking, non-module \texttt{<script>}}, placed as the very first
+thing in \texttt{<head>} in \texttt{Layout.astro}:
+
+\begin{lstlisting}
+<script is:inline define:vars={{ STORAGE_KEY, THEMES }}>
+  (function () {
+    var saved = localStorage.getItem(STORAGE_KEY);
+    var theme = THEMES.indexOf(saved) !== -1 ? saved
+      : matchMedia('(prefers-color-scheme: dark)').matches ? 'naruto' : 'foodwars';
+    document.documentElement.setAttribute('data-theme', theme);
+  })();
+</script>
+\end{lstlisting}
+
+It can't just \texttt{import} the logic from \texttt{theme.ts} because of
+timing: \texttt{<script type="module">} scripts are deferred by the
+browser --- they run after the document is parsed, which is \emph{after}
+first paint. A plain classic script with no \texttt{type} attribute runs
+synchronously, exactly where it sits, early enough to beat the render ---
+the same general pattern behind every ``dark mode without flash''
+implementation, not specific to Astro.
+
+Responsiveness (unrelated to theming, unchanged from the original
+implementation) follows the same ``define once'' instinct: layout uses
 CSS Grid/Flexbox with relative sizing (e.g.
 \texttt{repeat(auto-fill, minmax(280px, 1fr))} for card grids --- ``as
 many 280px+ columns as fit,'' reflowing from multi-column on desktop to
@@ -621,6 +732,65 @@ single-column on phones with no media query needed) plus two
 breakpoints (\texttt{480px}, \texttt{768px}) for the handful of things
 that need explicit adjustment. \texttt{clamp()} is used for heading
 sizes so text scales smoothly instead of jumping at breakpoints.
+
+\subsection{Experience Connectors --- One Component per Theme, Chosen by CSS}
+\label{sec:connectors}
+
+The Experience page connects entries with a themed visual motif instead
+of a plain line: a gnarled tree trunk (Naruto), a melted-butter ribbon
+(Food Wars), or a chain of elemental magic orbs (Fairy Tail) ---
+\texttt{SPEC.md} \S4. Each is its own self-contained component
+(\texttt{src/components/connectors/\{Tree,Butter,Magic\}Connector.astro})
+that renders the full thing: the spine SVG, every entry's branch
+artwork, \emph{and} the \texttt{ExperienceCard}s themselves, looped from
+the same \texttt{getExperience()} data as any other page.
+\texttt{experience.astro} renders all three, unconditionally, and
+\texttt{global.css} shows only the one matching the active theme:
+
+\begin{lstlisting}
+.tree--foodwars, .tree--naruto, .tree--fairytail { display: none; }
+:root[data-theme='naruto'] .tree--naruto { display: block; }
+\end{lstlisting}
+
+\textbf{Why render all three instead of asking JavaScript to swap the
+markup on theme change?} Because the display toggle is then just another
+CSS rule reacting to the same \texttt{data-theme} attribute everything
+else already reacts to --- switching themes stays a single attribute
+write with zero bespoke JavaScript for this page, and the connector can
+never get out of sync with the rest of the theme. The tradeoff, made
+deliberately: each entry's card renders three times in the HTML (two of
+them \texttt{display: none}, so nothing is visible or interactive, and
+hidden content is excluded from the accessibility tree) instead of once
+--- a fine trade, for a personal site with a handful of entries, against
+hand-rolling a re-render path the CSS-token system was specifically
+designed to avoid needing.
+
+\subsection{Extracurriculars Mascots --- Recoloring via Tokens, Not Redesign}
+\label{sec:mascots}
+
+The Extracurriculars section (\texttt{about.astro}) is the one
+deliberately playful spot on the site (\texttt{SPEC.md} \S7.6): one small
+original chibi pixel-art mascot per activity. \texttt{PixelMascot.astro}
+is a \emph{single} component --- one shared 40$\times$48 sprite (head,
+body, arms, legs, eyes) --- reused for every entry; only a small held
+prop (trophy, book, megaphone, \ldots) differs, picked by a \texttt{prop}
+string per entry declared in \texttt{about.astro}.
+
+Every color in that sprite comes from a mascot-specific set of tokens
+(\texttt{--mascot-primary}, \texttt{--mascot-secondary},
+\texttt{--mascot-skin}, \texttt{--mascot-outline}) defined in the
+\emph{same} three theme files as the site's main palette
+(\S\ref{sec:theming}) --- not a separate mascot-specific stylesheet.
+That's what makes ``switching the theme recolors the whole mascot
+roster'' true for free: there's no mascot-specific theming logic at all,
+just the general ``components read tokens, tokens change with
+\texttt{data-theme}'' mechanism applied to one more set of variables. The
+alternative --- drawing three differently-colored mascots per activity ---
+would have meant hand-authoring 18 sprites instead of 6.
+\texttt{ExtracurricularsBackground.astro} (the faint steam-wisp/
+leaf-spiral/magic-circle decoration behind the section) uses the
+identical show-one-hide-two-by-\texttt{data-theme} technique as the
+Experience connectors (\S\ref{sec:connectors}), for the same reason.
 
 % ===========================================================================
 \section{CI/CD: How a \texttt{git push} Becomes a Live Website}
@@ -683,7 +853,7 @@ specific branch's raw files,'' the older Pages model), which is what
 lets this custom build step run at all.
 
 % ===========================================================================
-\section{Two Real Bugs Hit and Fixed}
+\section{Three Real Bugs Hit and Fixed}
 \label{sec:bugs}
 
 Small, concrete, and each shows a debugging \emph{process}, not just a
@@ -733,11 +903,49 @@ and the YAML paths updated to point there, plus the page template
 updated to prefix internal paths with the base path (same mechanism as
 Bug 1), leaving external links (GitHub repo URLs) untouched.
 
-\begin{whybox}[title={\textbf{The general lesson from both bugs}}]
+\subsection{Bug 3: Two of the Three Themes' Badge Colors Failed Accessibility Contrast}
+
+\textbf{Symptom:} none visible in a casual look --- the tag/badge colors
+(\texttt{SPEC.md} \S7's Golden Saffron, Rasengan Blue, Sage Gold,
+Celestial Gold, etc.) all looked fine as \emph{fills}. The bug only shows
+up if you actually compute contrast, not by eyeballing a screen.
+
+\textbf{Root cause:} the original \texttt{.badge} CSS put the accent
+color as small \emph{text} on a barely-tinted background
+(\texttt{color: var(--color-accent-2)} on 18\%-mixed
+\texttt{var(--color-accent-2)}) --- a pattern that happened to work for
+the site's very first accent (a dark enough orange), but several of the
+new themes' secondary/rare accents are saturated \emph{mid-tone} colors
+(e.g.\ Golden Saffron \texttt{\#F5A623}). Computing the WCAG contrast
+ratio between that color and white gives $\sim$2:1 --- nowhere near the
+4.5:1 that WCAG 2.1 AA requires for normal-sized text, even though the
+exact same color is perfectly legible used as a solid fill (badges/pills
+are read as shapes with high area, not as small glyphs whose edges need
+to resolve against the background).
+
+\textbf{How it was found:} \texttt{SPEC.md} \S7.2 explicitly flagged
+``check contrast before shipping'' as a reminder attached to the primary
+accent --- that prompted actually computing the relative-luminance
+contrast ratio for each theme's accent-2/accent-rare color against the
+surface it'd sit on, rather than assuming the spec's example hex values
+were pre-verified.
+
+\textbf{Fix:} redesigned \texttt{.badge}/\texttt{.badge-featured} as
+solid-fill pills (\texttt{background: var(--color-accent-2)}) with a
+\emph{computed} text color per theme (\texttt{--color-on-accent-2} ---
+dark ink for the two lighter accents, white for the one dark enough to
+support it) instead of tinted-background plus colored-text. The brand hex
+values from \texttt{SPEC.md} \S7 are unchanged --- only which color sits
+\emph{on top of} which was redesigned, once the actual combination was
+checked rather than assumed.
+
+\begin{whybox}[title={\textbf{The general lesson from all three bugs}}]
 A successful build (\texttt{exit code 0}) proves the code
-\emph{compiled}, not that the output is \emph{correct}. Verifying this
-project meant actually reading the generated HTML and following the
-links, not just trusting a green checkmark.
+\emph{compiled}, not that the output is \emph{correct or accessible}.
+Verifying this project meant actually reading the generated HTML and
+following the links (Bugs 1--2), and actually computing contrast ratios
+instead of trusting a color that ``looks readable'' on one screen
+(Bug 3) --- not just trusting a green checkmark.
 \end{whybox}
 
 % ===========================================================================
@@ -764,6 +972,22 @@ links, not just trusting a green checkmark.
   per project lets each one carry its full writeup, tech stack, and
   links without cluttering the overview --- and gives each project its
   own shareable URL.
+  \item \textbf{Why a native \texttt{<input type="range">} for the theme
+  slider instead of building a custom one?} A hand-built slider (three
+  \texttt{<div>}s with click handlers) would have to reimplement keyboard
+  stepping and screen-reader announcement by hand to meet the
+  accessibility bar \texttt{SPEC.md} \S7 sets. The native control gets
+  both for free --- a browser-provided primitive being strictly less work
+  \emph{and} more robust than a bespoke one, for a genuinely standard
+  interaction (\S\ref{sec:theming}).
+  \item \textbf{Why render all three Experience connectors and pick one
+  with CSS, instead of one connector that swaps its own markup in
+  JavaScript?} Keeping the ``what's visible'' decision inside the same
+  CSS \texttt{[data-theme]} mechanism everything else already uses means
+  there's exactly one code path for ``the theme changed'' (write one HTML
+  attribute), not two. The cost --- a little duplicate hidden markup
+  (\S\ref{sec:connectors}) --- is worth paying to avoid a second,
+  page-specific theming mechanism.
 \end{itemize}
 
 % ===========================================================================
@@ -797,7 +1021,20 @@ Design tokens &
   place. \\[4pt]
 \texttt{prefers-color-scheme} &
   A CSS media query that detects the visitor's OS-level light/dark mode
-  preference. \\[4pt]
+  preference --- used here only to pick a sensible \emph{first-visit}
+  theme (Food Wars vs.\ Naruto); it can't select a third named theme on
+  its own (\S\ref{sec:theming}). \\[4pt]
+\texttt{data-*} attribute / attribute selector &
+  A custom HTML attribute (\texttt{data-theme="naruto"}) read by both CSS
+  (\texttt{:root[data-theme='naruto'] \{ \ldots\ \}}) and JavaScript
+  (\texttt{element.dataset.theme}) --- the mechanism this site's 3-way
+  theme switch is built on (\S\ref{sec:theming}), since ``which of three
+  themes'' can't be expressed by a media query alone. \\[4pt]
+WCAG contrast ratio &
+  The Web Content Accessibility Guidelines' minimum relative-luminance
+  contrast between text and its background (4.5:1 for normal text) ---
+  computable, not eyeballable; catching a violation of it was Bug 3 in
+  \S\ref{sec:bugs}. \\[4pt]
 OIDC &
   A way for a CI job to prove its identity to a service (here, GitHub
   Pages) without a manually-created, manually-rotated secret token. \\[4pt]
@@ -834,18 +1071,26 @@ Base path &
   \texttt{astro build}), then a \texttt{deploy} job that only runs if
   \texttt{build} succeeded, publishing to GitHub Pages. Live in under a
   minute.
-  \item[``Tell me about a bug you ran into.''] Either bug in
-  \S\ref{sec:bugs} --- both have a clear symptom, root cause, and fix,
-  and both illustrate the same lesson: a successful build doesn't
-  guarantee correct output.
+  \item[``Tell me about a bug you ran into.''] Any of the three bugs in
+  \S\ref{sec:bugs}. The first two illustrate ``a successful build doesn't
+  guarantee correct output, so verify the actual generated files''; the
+  third illustrates the same idea one level up --- a color that ``looks
+  fine'' doesn't guarantee it's accessible, so compute the contrast ratio
+  instead of eyeballing it.
   \item[``How is content separated from code?''] \S\ref{sec:contentmodel}:
   YAML files hold data, a loader reads and types it, page templates loop
   over whatever the loader returns.
-  \item[``How does dark mode work?''] \S\ref{sec:codewalkthrough}: CSS
-  custom properties define colors by role; a
-  \texttt{prefers-color-scheme: dark} media query overrides just those
-  variables; every rule referencing a variable updates automatically ---
-  no JavaScript, no toggle.
+  \item[``How does the theme system work?''] \S\ref{sec:theming}: three
+  CSS files define the same token names under
+  \texttt{:root[data-theme='\ldots']}; a native range-input slider writes
+  that attribute and persists the choice to \texttt{localStorage}; every
+  rule referencing a \texttt{var(--color-*)} token re-resolves
+  automatically the instant the attribute changes, so ``switch theme'' is
+  a single attribute write, not a re-render. A blocking inline script
+  re-applies the saved choice before first paint, so reloads never flash
+  the default theme. The Experience connector and Extracurriculars
+  mascots (\S\ref{sec:connectors}, \S\ref{sec:mascots}) hook into the
+  exact same mechanism rather than inventing their own.
   \item[``Why didn't you use a database / CMS?''] The content is small,
   changes rarely, and there's already a source of truth (plain text
   files in git). A database/CMS adds infrastructure and a network

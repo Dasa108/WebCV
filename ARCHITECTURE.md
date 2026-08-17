@@ -197,13 +197,23 @@ WebCV/
 │   ├── documents/                # report/slide PDFs linked from projects.yaml
 │   └── images/{experience,projects}/
 └── src/                    # ← the "presentation layer"
-    ├── lib/content.ts             # reads content/*.yaml (§4, §6.1)
-    ├── styles/global.css          # design tokens, responsive/dark mode (§6.4)
+    ├── lib/
+    │   ├── content.ts             # reads content/*.yaml (§4, §6.1)
+    │   └── theme.ts                # theme list + localStorage helpers (§6.4)
+    ├── styles/
+    │   ├── global.css              # shared layout/type/spacing/card tokens (§6.4)
+    │   └── themes/                 # one CSS custom-property set per theme (§6.4)
+    │       ├── foodwars.css, naruto.css, fairytail.css
     ├── components/                # reusable page pieces (§6.2)
     │   ├── Layout.astro, Nav.astro, Footer.astro
-    │   └── ExperienceCard.astro, ProjectCard.astro
+    │   ├── ExperienceCard.astro, ProjectCard.astro
+    │   ├── ThemeSwitcher.astro     # the global 3-point theme slider (§6.4)
+    │   ├── PixelMascot.astro, ExtracurricularsBackground.astro   (§6.6)
+    │   └── connectors/             # one Experience-page connector per theme (§6.5)
+    │       ├── TreeConnector.astro, ButterConnector.astro, MagicConnector.astro
     └── pages/                      # ← one file = one route (§6.3)
         ├── index.astro             # "/"
+        ├── about.astro             # "/about"
         ├── experience.astro        # "/experience"
         └── projects/
             ├── index.astro         # "/projects"
@@ -263,7 +273,7 @@ so dates are stored in a sortable/parseable machine format (`YYYY-MM`) in
 the YAML but shown in a human-readable format on the page — another
 small separation of "data representation" from "display representation."
 
-### 6.2 `src/components/` — Layout, Nav, Footer, Cards
+### 6.2 `src/components/` — Layout, Nav, Footer, Cards, theming
 
 - **[`Layout.astro`](https://docs.astro.build/en/basics/layouts/)** is
   the page shell every page wraps itself in: it emits the
@@ -274,7 +284,8 @@ small separation of "data representation" from "display representation."
   the "SEO" entry in the glossary if unfamiliar), then renders `<Nav>`,
   [`<slot />`](https://docs.astro.build/en/basics/astro-components/#slots)
   (where the page's own content goes), then `<Footer>`. Every page passes
-  it a `title`, `description`, and which nav item is "active."
+  it a `title`, `description`, and which nav item is "active." It's also
+  where the anti-flash theme script lives — see §6.4.
 - **`Nav.astro`** builds its links from
   [`import.meta.env.BASE_URL`](https://docs.astro.build/en/guides/environment-variables/)
   rather than hardcoding `/WebCV/...` — so the same code works whether
@@ -282,13 +293,20 @@ small separation of "data representation" from "display representation."
   it ever moves to a custom domain). It marks the current page with
   [`aria-current="page"`](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-current)
   (an [accessibility](https://developer.mozilla.org/en-US/docs/Web/Accessibility)
-  attribute screen readers announce, which also happens to be what the
-  CSS uses to draw the orange underline).
+  attribute screen readers announce, which is also what the CSS keys off
+  to draw the active-page underline in the active theme's accent color).
+  It also renders `<ThemeSwitcher>` (§6.4) — one instance, shared across
+  every page, so the slider is never out of sync with itself.
 - **`ExperienceCard.astro`** / **`ProjectCard.astro`** each take one
   entry (the TypeScript types from `content.ts`) as a
   [prop](https://docs.astro.build/en/basics/astro-components/#component-props)
   and render it. They don't know or care how many times they're used —
   the pages loop and call them once per entry (§6.3).
+- **`ThemeSwitcher.astro`**, **`connectors/{Tree,Butter,Magic}Connector.astro`**,
+  **`PixelMascot.astro`**, **`ExtracurricularsBackground.astro`** are all
+  new since the original build — the theme system and its two themed
+  page elements. Covered in depth in §6.4–§6.6, since each makes its own
+  distinct design decision worth explaining on its own.
 
 ### 6.3 `src/pages/` — file-based routing, and the dynamic-route trick
 
@@ -324,47 +342,102 @@ The rest of that file (§ links, formatting) is templating detail; the
 `getStaticPaths` pattern is the one concept worth being able to explain,
 because it's the direct mechanism behind "one YAML entry = one live page."
 
-### 6.4 `src/styles/global.css` — design tokens, dark mode, responsiveness
+### 6.4 The theme system — three palettes, one switch, zero re-render
 
-The palette (a three-anime blend — Naruto orange primary accent, navy/cream
-base pair, sparing One Piece gold / Food Wars crimson accents — the exact
-colors and their reasoning are in `SPEC.md` §9.1) is implemented as
-**[CSS custom properties](https://developer.mozilla.org/en-US/docs/Web/CSS/Using_CSS_custom_properties)**
-(a.k.a. CSS variables), not hardcoded hex values scattered through the
-stylesheet:
+This is the second-most-important design decision in the project (after
+§4's content model), so it's worth walking through in the same depth.
+
+**The requirement** (`SPEC.md` §7): not a light/dark toggle, but three
+named, switchable themes — Food Wars (default, light), Naruto (repurposed
+as the dark mode, since its palette already reads as a night aesthetic),
+Fairy Tail (an alternate) — controlled by one slider that lives in the nav
+and applies to the whole site instantly, with the choice remembered
+across reloads and page navigation.
+
+**The token layer is the same idea as before, just leveled up.** The
+original site had one palette with a `prefers-color-scheme: dark`
+override — two states. Extending that to *three arbitrary named states*
+means the states can no longer be selected by a media query (there's no
+"prefers-fairy-tail" signal from the OS) — they need an explicit switch.
+The mechanism is a
+**[`data-theme` HTML attribute](https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes/data-*)**
+on `<html>`, and one CSS file per theme
+(`src/styles/themes/{foodwars,naruto,fairytail}.css`), each scoping the
+exact same token names under a different
+**[attribute selector](https://developer.mozilla.org/en-US/docs/Web/CSS/Attribute_selectors)**:
 
 ```css
-:root {
-  --color-accent: #e8611c;
-  --color-bg: #fbf6ee;
-  --color-text: #232323;
-  /* ...more tokens... */
-}
+/* foodwars.css */
+:root, :root[data-theme='foodwars'] { --color-bg: #fff9f0; --color-accent: #e8283f; /* … */ }
+/* naruto.css */
+:root[data-theme='naruto']          { --color-bg: #1b1f2a; --color-accent: #e8611c; /* … */ }
+/* fairytail.css */
+:root[data-theme='fairytail']       { --color-bg: #241b3a; --color-accent: #ff6b4a; /* … */ }
+```
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --color-bg: #1b1f2a;
-    --color-text: #edeae3;
-    /* accent orange is NOT redefined — stays the same in both modes */
-  }
+`global.css` still never hardcodes a color — it just references
+`var(--color-bg)`, `var(--color-accent)`, etc., exactly as before. Because
+all three theme files define the *same token names*, none of that shared
+CSS needs to know which theme is active; whichever `[data-theme='…']`
+block matches the attribute on `<html>` is what the browser resolves the
+variable to. Adding a fourth theme later would mean adding one more CSS
+file with the same token names — zero changes to any component.
+
+**Making the switch:** `ThemeSwitcher.astro` renders a native
+[`<input type="range">`](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/input/range)
+(3 stops: `min=0 max=2 step=1`) instead of a hand-built slider widget —
+deliberately, because a native form control gives keyboard support (arrow
+keys move between stops) and screen-reader value announcement for free,
+which a `<div>`-based custom slider would have to reimplement by hand to
+meet `SPEC.md`'s accessibility bar. Its `input` event handler calls
+`applyTheme()` (`src/lib/theme.ts`), which does exactly two things: set
+the attribute, persist the choice.
+
+```ts
+export function applyTheme(theme: Theme): void {
+  document.documentElement.setAttribute('data-theme', theme);
+  localStorage.setItem(STORAGE_KEY, theme);
 }
 ```
 
-Every component then uses `var(--color-bg)` etc. instead of a literal
-color. This is called a
-**[design-token system](https://m3.material.io/foundations/design-tokens/overview)**:
-define each color/size *once*, by role ("background," "accent," "border")
-rather than by value, then reference the role everywhere. The payoff is
-exactly what happens above — dark mode is a ~10-line override block, not
-a second copy of every color rule, because only the *tokens* change;
-every rule that uses `var(--color-bg)` picks up the new value
-automatically. This also respects the visitor's OS-level light/dark
-preference automatically via the
-[`prefers-color-scheme`](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-color-scheme)
-[media query](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_media_queries),
-with no toggle button or JavaScript required.
+That's the entire "re-theme the page" operation — one attribute write.
+There's no JavaScript that walks the DOM repainting elements; every rule
+in every stylesheet that reads a `var(--color-*)` token re-resolves
+automatically the instant the attribute changes, because that's how CSS
+custom property inheritance works. This is the same lesson as the design
+tokens in the original dark-mode implementation, just scaled from "one
+override block" to "three swappable stylesheets."
 
-Responsiveness follows the same "define once" instinct: layout uses
+**Avoiding a flash of the wrong theme on load:** the saved theme has to
+be applied *before* the browser's first paint, or a returning visitor who
+picked Fairy Tail would see a flash of Food Wars (the CSS default) before
+JavaScript corrects it. The fix is a classic
+**blocking, non-module `<script>`**, placed as the very first thing in
+`<head>` in `Layout.astro`:
+
+```html
+<script is:inline define:vars={{ STORAGE_KEY, THEMES }}>
+  (function () {
+    var saved = localStorage.getItem(STORAGE_KEY);
+    var theme = THEMES.indexOf(saved) !== -1 ? saved
+      : matchMedia('(prefers-color-scheme: dark)').matches ? 'naruto' : 'foodwars';
+    document.documentElement.setAttribute('data-theme', theme);
+  })();
+</script>
+```
+
+The reason it can't just `import` the logic from `theme.ts` is timing:
+[module scripts](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Modules)
+(`<script type="module">`) are deferred by the browser — they run after
+the document is parsed, which is *after* first paint. A plain classic
+script with no `type` attribute runs synchronously, exactly where it sits
+in the document, which is early enough to beat the render. This is a
+real, general web-dev pattern (the same one every "dark mode without
+flash" implementation uses), not specific to Astro — it's just usually
+invisible unless you go looking for *why* a site's theme never flickers.
+
+Responsiveness (unrelated to theming, unchanged from the original
+implementation) follows the same "define once" instinct: layout uses
 [CSS Grid](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_grid_layout)/[Flexbox](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_flexible_box_layout)
 with relative sizing (`grid-template-columns: repeat(auto-fill,
 minmax(280px, 1fr))` for card grids — "as many 280px+ columns as fit,"
@@ -376,6 +449,70 @@ button stacking).
 used for heading sizes so text scales smoothly between a minimum and
 maximum instead of jumping at breakpoints. This general approach is
 called [responsive web design](https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/CSS_layout/Responsive_Design).
+
+### 6.5 Experience connectors — one component per theme, chosen by CSS
+
+The Experience page connects entries with a themed visual motif instead
+of a plain line: a gnarled tree trunk (Naruto), a melted-butter ribbon
+(Food Wars), or a chain of elemental magic orbs (Fairy Tail) — see
+`SPEC.md` §4. Each is its own self-contained component
+(`src/components/connectors/{Tree,Butter,Magic}Connector.astro`) that
+renders the full thing: the spine SVG, every entry's branch artwork, *and*
+the `ExperienceCard`s themselves, looped from the same `getExperience()`
+data as any other page.
+
+`experience.astro` renders all three, unconditionally:
+
+```astro
+<TreeConnector experience={experience} />
+<ButterConnector experience={experience} />
+<MagicConnector experience={experience} />
+```
+
+...and `global.css` shows only the one matching the active theme:
+
+```css
+.tree--foodwars, .tree--naruto, .tree--fairytail { display: none; }
+:root[data-theme='naruto'] .tree--naruto { display: block; }
+```
+
+**Why render all three instead of asking JavaScript to swap the markup on
+theme change?** Because the display toggle is then just another CSS rule
+reacting to the same `data-theme` attribute everything else already
+reacts to (§6.4) — switching themes stays a single attribute write with
+zero bespoke JavaScript for this one page, and the connector can never get
+out of sync with the rest of the theme. The tradeoff, made deliberately:
+each entry's card renders three times in the HTML (two of them
+`display: none`, so nothing is visible or interactive, and hidden content
+is excluded from the accessibility tree) instead of once. For a personal
+site with a handful of experience entries that's a few extra KB of HTML —
+a fine trade for not hand-rolling a re-render path that the CSS-token
+system was specifically designed to avoid needing.
+
+### 6.6 Extracurriculars mascots — recoloring via tokens, not redesign
+
+The Extracurriculars section (`about.astro`) is the one deliberately
+playful spot on the site (`SPEC.md` §7.6): one small original chibi
+pixel-art mascot per activity. `PixelMascot.astro` is a *single* component
+— one shared 40×48 sprite (head, body, arms, legs, eyes) — reused for
+every entry; only a small held prop (trophy, book, megaphone, …) differs,
+picked by a `prop` string prop per entry declared in `about.astro`.
+
+Every color in that sprite comes from a mascot-specific set of tokens
+(`--mascot-primary`, `--mascot-secondary`, `--mascot-skin`,
+`--mascot-outline`) defined in the *same* three theme files as the site's
+main palette (§6.4) — not a separate mascot-specific stylesheet. That's
+what makes "switching the theme recolors the whole mascot roster" true
+for free: there's no mascot-specific theming logic at all, just the
+general "components read tokens, tokens change with `data-theme`"
+mechanism applied to one more set of variables. The alternative — drawing
+three differently-colored (or differently-posed) mascots per activity —
+would have meant hand-authoring 18 sprites instead of 6; recoloring via
+tokens keeps it to 6 no matter how many themes exist.
+`ExtracurricularsBackground.astro` (the faint steam-wisp/leaf-spiral/
+magic-circle decoration behind the section) uses the identical
+show-one-hide-two-by-`data-theme` technique as the Experience connectors
+(§6.5), for the same reason.
 
 ---
 
@@ -443,7 +580,7 @@ all.
 
 ---
 
-## 8. Two real bugs I hit and fixed
+## 8. Three real bugs I hit and fixed
 
 These are worth keeping in your back pocket for "tell me about a bug you
 debugged" — they're small, concrete, and show a debugging *process*, not
@@ -495,10 +632,48 @@ paths with the base path (same mechanism as Bug 1), while leaving
 external links (GitHub repo URLs) untouched, since only internal paths
 need the site's own base prefix.
 
-**The general lesson from both bugs:** a successful build (`exit code 0`)
-proves the *code compiled*, not that the *output is correct*. Verifying
-this project meant actually reading the generated HTML and following the
-links, not just trusting a green checkmark.
+### Bug 3: two of the three themes' badge colors failed accessibility contrast
+
+**Symptom:** none visible in a casual look — the tag/badge colors
+(`SPEC.md` §7's Golden Saffron, Rasengan Blue, Sage Gold, Celestial Gold,
+etc.) all looked fine as *fills*. The bug only shows up if you actually
+compute contrast, not by eyeballing a screen.
+
+**Root cause:** the original `.badge` CSS put the accent color as small
+*text* on a barely-tinted background (`color: var(--color-accent-2)` on
+`color-mix(var(--color-accent-2) 18%, transparent)`) — a pattern that
+happened to work for the site's very first accent (a dark enough orange),
+but several of the new themes' secondary/rare accents are saturated
+*mid-tone* colors (e.g. Golden Saffron `#F5A623`). Computing the
+[WCAG contrast ratio](https://webaim.org/resources/contrastchecker/)
+between that color and white gives **~2:1** — nowhere near the 4.5:1 the
+**[WCAG 2.1 AA](https://www.w3.org/WAI/WCAG21/Understanding/contrast-minimum.html)**
+standard requires for normal-sized text, even though the exact same color
+is perfectly legible used as a solid fill (badges/pills are read as
+shapes with high area, not as small glyphs whose edges need to resolve
+against the background).
+
+**How I found it:** `SPEC.md` §7.2 explicitly flagged "check contrast
+before shipping" as a reminder attached to the primary accent — that
+prompted actually computing the relative-luminance contrast ratio (the
+formula behind every contrast checker) for each theme's accent-2/
+accent-rare color against the surface it'd sit on, rather than assuming
+the spec's example hex values were pre-verified.
+
+**Fix:** redesigned `.badge`/`.badge-featured` as solid-fill pills
+(`background: var(--color-accent-2)`) with a *computed* text color per
+theme (`--color-on-accent-2` — dark ink for the two lighter accents,
+white for the one dark enough to support it) instead of tinted-background
+plus colored-text. The brand hex values from `SPEC.md` §7 are unchanged —
+only which color sits *on top of* which was redesigned, once the actual
+combination was checked rather than assumed.
+
+**The general lesson from all three bugs:** a successful build
+(`exit code 0`) proves the *code compiled*, not that the *output is
+correct or accessible*. Verifying this project meant actually reading the
+generated HTML and following the links (bugs 1–2), and actually computing
+contrast ratios instead of trusting a color that "looks readable" on one
+screen (bug 3) — not just trusting a green checkmark.
 
 ---
 
@@ -525,6 +700,22 @@ links, not just trusting a green checkmark.
   lets each one carry its full writeup, tech stack, and links without
   cluttering the overview — and it gives each project its own shareable
   URL.
+- **Why a native `<input type="range">` for the theme slider instead of
+  building a custom one?** A hand-built slider (three `<div>`s with click
+  handlers) would have to reimplement keyboard stepping and screen-reader
+  announcement by hand to meet the accessibility bar `SPEC.md` §7 sets.
+  The native control gets both for free — a case of a browser-provided
+  primitive being strictly less work *and* more robust than a bespoke one
+  for a genuinely standard interaction (§6.4).
+- **Why render all three Experience connectors and pick one with CSS,
+  instead of one connector that swaps its own markup in JavaScript?**
+  Keeping the "what's visible" decision inside the same CSS
+  `[data-theme]` mechanism every other themed element already uses means
+  there's exactly one code path for "the theme changed" (write one HTML
+  attribute) instead of two (that, plus a JS listener that reaches into
+  the Experience page specifically to re-render SVGs). The cost is a
+  little duplicate hidden markup (§6.5) — a trade worth making to avoid a
+  second, page-specific theming mechanism.
 
 ---
 
@@ -553,7 +744,20 @@ links, not just trusting a green checkmark.
   editing one place, not hunting through every file.
 - **[`prefers-color-scheme`](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-color-scheme):**
   a CSS media query that detects the visitor's OS-level light/dark mode
-  preference.
+  preference — used here only to pick a sensible *first-visit* theme
+  (Food Wars vs. Naruto); it can't select a third named theme on its own
+  (§6.4).
+- **[`data-*` attribute](https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes/data-*)
+  / [attribute selector](https://developer.mozilla.org/en-US/docs/Web/CSS/Attribute_selectors):**
+  a custom HTML attribute (`data-theme="naruto"`) read by both CSS
+  (`:root[data-theme='naruto'] { … }`) and JavaScript
+  (`element.dataset.theme`) — the mechanism this site's 3-way theme
+  switch is built on (§6.4), since a value like "which of three themes"
+  can't be expressed by a CSS media query alone.
+- **[WCAG contrast ratio](https://www.w3.org/WAI/WCAG21/Understanding/contrast-minimum.html):**
+  the Web Content Accessibility Guidelines' minimum relative-luminance
+  contrast between text and its background (4.5:1 for normal text) —
+  computable, not eyeballable; catching a violation of it was Bug 3 in §8.
 - **[OIDC](https://openid.net/developers/how-connect-works/) (in the GitHub Actions permissions block):**
   a way for the CI job to prove its identity to GitHub Pages without a
   manually-created, manually-rotated secret token.
@@ -591,21 +795,28 @@ build`), then a `deploy` job that only runs if `build` succeeded, which
 publishes the result to GitHub Pages. Live in under a minute.
 
 **"Tell me about a bug you ran into."**
-→ Either bug in §8 — both have a clear symptom, root cause, and fix, and
-both illustrate the same lesson: a successful build doesn't guarantee
+→ Any of the three bugs in §8 — each has a clear symptom, root cause, and
+fix. The first two illustrate "a successful build doesn't guarantee
 correct output, so verify the actual generated files, not just the exit
-code.
+code"; the third (§8, Bug 3) illustrates the same idea one level up — a
+color that "looks fine" doesn't guarantee it's accessible, so compute the
+contrast ratio instead of eyeballing it.
 
 **"How is content separated from code?"**
 → §4: YAML files hold data, a loader (`content.ts`) reads and types it,
 page templates loop over whatever the loader returns. Content and
 presentation never mix in the same file.
 
-**"How does dark mode work?"**
-→ §6.4: CSS custom properties define colors by role; a
-`prefers-color-scheme: dark` media query overrides just those variables;
-every rule that references a variable updates automatically — no
-JavaScript, no toggle, follows the OS setting.
+**"How does the theme system work?"**
+→ §6.4: three CSS files define the same token names under
+`:root[data-theme='…']`; a native range-input slider writes that
+attribute and persists the choice to `localStorage`; every rule that
+references a `var(--color-*)` token re-resolves automatically the instant
+the attribute changes, so "switch theme" is a single attribute write, not
+a re-render. A blocking inline script re-applies the saved choice before
+first paint, so reloads never flash the default theme (also §6.4). The
+Experience-page connector and Extracurriculars mascots (§6.5, §6.6) hook
+into the exact same mechanism rather than inventing their own.
 
 **"Why didn't you use a database / CMS?"**
 → The content is small, changes rarely, and I already have a source of
@@ -614,7 +825,7 @@ a network dependency to solve a problem plain files in version control
 already solve for free.
 
 **"What would you do differently / what's not done yet?"**
-→ Point to the open items in `PLAN.md` §6 — honest, specific, shows you
+→ Point to the open items in `PLAN.md` §7 — honest, specific, shows you
 know the difference between "shipped" and "perfect," which is itself a
 good signal in an interview.
 
@@ -669,3 +880,9 @@ good signal in an interview.
 | Open Graph protocol | https://ogp.me |
 | Canonical URLs | https://developers.google.com/search/docs/crawling-indexing/consolidate-duplicate-urls |
 | Design docs (why write a spec first) | https://www.industrialempathy.com/posts/design-docs-at-google/ |
+| `data-*` attributes | https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes/data-* |
+| CSS attribute selectors | https://developer.mozilla.org/en-US/docs/Web/CSS/Attribute_selectors |
+| `<input type="range">` | https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/input/range |
+| JavaScript modules (why `type="module"` scripts are deferred) | https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Modules |
+| WCAG 2.1 — contrast minimum | https://www.w3.org/WAI/WCAG21/Understanding/contrast-minimum.html |
+| WebAIM contrast checker | https://webaim.org/resources/contrastchecker/ |
