@@ -1,4 +1,6 @@
 ---
+import { SITE_GITHUB, SITE_LINKEDIN } from '../lib/site';
+
 const base = import.meta.env.BASE_URL;
 const year = new Date().getFullYear();
 ---
@@ -12,6 +14,8 @@ const year = new Date().getFullYear();
       <li><a href={`${base}experience`}>Experience</a></li>
       <li><a href={`${base}projects`}>Projects</a></li>
       <li><a href={`${base}#contact`}>Contact</a></li>
+      <li><a href={SITE_GITHUB} target="_blank" rel="noopener noreferrer">GitHub</a></li>
+      <li><a href={SITE_LINKEDIN} target="_blank" rel="noopener noreferrer">LinkedIn</a></li>
     </ul>
   </div>
 </footer>

@@ -9,7 +9,7 @@ later without touching any page code.
 | | |
 |---|---|
 | **Status** | **Live**: https://dasa108.github.io/WebCV/ |
-| **Last updated** | 2026-08-17 |
+| **Last updated** | 2026-08-18 |
 
 ## 1. Source inventory
 
@@ -184,7 +184,29 @@ interaction — worth a manual pass (click + drag + arrow keys on all three
 stops, on the deployed URL) before calling Acceptance Criterion 9 (§8)
 fully verified.
 
-## 7. Open TODOs
+## 7. Contact & social links (added 2026-08-18, SPEC.md §4)
+
+GitHub (https://github.com/Dasa108) and LinkedIn
+(https://www.linkedin.com/in/sudarshana-chaitanya-b-n-935167319) added
+alongside email — fulfills the "footer should contain the github link too"
+note that was sitting inline in SPEC.md §4.
+
+- `src/lib/site.ts` (new) — `SITE_EMAIL`/`SITE_GITHUB`/`SITE_LINKEDIN`,
+  one place to update any of the three; `index.astro`/`about.astro`'s
+  previously-duplicated `email` constant now imports from here too.
+- `Footer.astro` — GitHub + LinkedIn added to the link list, so they're
+  visible on every page regardless of scroll position.
+- Home (`/`) and About (`/about`) Contact/CTA sections — GitHub/LinkedIn
+  added as `.btn-secondary` buttons next to `Contact me`/`Download CV`;
+  Home's Contact section also gets a plain-text line next to the email
+  address.
+
+Verified: `npm run build` (0 errors, 6 pages) + grepped the built HTML —
+3 GitHub/LinkedIn links per page where a Contact section exists (Home),
+2 where only the footer + CTA button do (About), 1 (footer only) on
+Experience/Projects.
+
+## 8. Open TODOs
 
 **Done:**
 - [x] `astro.config.mjs` — `site: 'https://Dasa108.github.io'`,

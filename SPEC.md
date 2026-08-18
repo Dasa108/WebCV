@@ -60,6 +60,19 @@ the active theme's accent; logo/name links Home.
 - **About (`/about`)** — full bio (3–5 sentences), education table, skills
   grouped by category, **extracurriculars with themed background
   elements** (§7.6), repeat CTA.
+
+**Contact & social links** — email is the required minimum; GitHub
+(https://github.com/Dasa108) and LinkedIn
+(https://www.linkedin.com/in/sudarshana-chaitanya-b-n-935167319) are shown
+alongside it, not buried in a single icon-only row:
+- **Footer**, every page — plain text links, always visible regardless of
+  scroll position.
+- **Contact section**, Home and About — next to the email line and as
+  `.btn-secondary` buttons in the CTA row (`Contact me` / `Download CV` /
+  `GitHub` / `LinkedIn`).
+All three (email/GitHub/LinkedIn) are defined once in `src/lib/site.ts` and
+imported everywhere they're used, so there's a single place to update if
+any of them change.
 - **Experience (`/experience`)** — single reverse-chronological work list
   (internships, jobs, freelance, volunteer all tagged in one list, not
   separated). Each entry: role, org, type badge, dates, 2–4 impact bullets.
@@ -80,6 +93,7 @@ the active theme's accent; logo/name links Home.
   tags, links, outcome line); optional "featured" flag using the active
   theme's rare-highlight accent, sparingly; each card → its own
   `/projects/<slug>` detail page.
+
 
 ## 5. Extensible Content Model
 
@@ -311,6 +325,7 @@ WebCV/
 └── src/
     ├── lib/content.ts
     ├── lib/theme.ts               # theme toggle + localStorage persistence
+    ├── lib/site.ts                # email/GitHub/LinkedIn — single source of truth (§4)
     ├── pages/ (index, about, experience, projects/index, projects/[slug])
     ├── components/
     │   ├── Layout.astro · Nav.astro · Footer.astro · ThemeSwitcher.astro
