@@ -1,5 +1,5 @@
 /* ============================================================================
-   Theme tokens live in src/styles/themes/{foodwars,naruto,fairytail}.css
+   Theme tokens live in src/styles/themes/{foodwars,naruto,free}.css
    (imported by Layout.astro, before this file) — three full sets of the
    same CSS custom properties, swapped via a `data-theme` attribute on
    <html> (SPEC.md §7.1). Only color tokens vary; every rule below reuses
@@ -393,12 +393,12 @@ a.card:hover {
 }
 .tree--foodwars,
 .tree--naruto,
-.tree--fairytail {
+.tree--free {
   display: none;
 }
 :root[data-theme='foodwars'] .tree--foodwars,
 :root[data-theme='naruto'] .tree--naruto,
-:root[data-theme='fairytail'] .tree--fairytail {
+:root[data-theme='free'] .tree--free {
   display: block;
 }
 
@@ -465,10 +465,10 @@ a.card:hover {
 .tree-item--left .tree-node {
   transform: translateY(-50%) scaleX(-1);
 }
-/* Fairy Tail: each node is an elemental orb (fire/water/ice/lightning,
-   cycled by entry index — SPEC §4) instead of a plain accent dot, with a
-   soft matching glow. Color set inline per item via --orb-color. */
-.tree-node--orb {
+/* Free!: each node is a glossy water bubble (shallow/current/deep/one warm
+   "lane-flag" tone, cycled by entry index — SPEC §4) instead of a plain
+   accent dot, with a soft matching glow. Color set inline via --orb-color. */
+.tree-node--bubble {
   background: var(--orb-color, var(--color-accent));
   box-shadow: 0 0 0 3px var(--color-bg), 0 0 10px 2px var(--orb-color, var(--color-accent));
 }
@@ -692,7 +692,7 @@ a.card:hover {
 }
 :root[data-theme='foodwars'] .extracurriculars-bg > .bg--foodwars,
 :root[data-theme='naruto'] .extracurriculars-bg > .bg--naruto,
-:root[data-theme='fairytail'] .extracurriculars-bg > .bg--fairytail {
+:root[data-theme='free'] .extracurriculars-bg > .bg--free {
   display: block;
 }
 

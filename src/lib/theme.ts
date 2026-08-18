@@ -5,13 +5,13 @@
 // as a classic synchronous script before first paint, so it can't just
 // `import` this module) — keep the two in sync if the logic changes.
 
-export const THEMES = ['foodwars', 'naruto', 'fairytail'] as const;
+export const THEMES = ['foodwars', 'naruto', 'free'] as const;
 export type Theme = (typeof THEMES)[number];
 
 export const THEME_LABELS: Record<Theme, string> = {
   foodwars: 'Food Wars',
   naruto: 'Naruto',
-  fairytail: 'Fairy Tail',
+  free: 'Free!',
 };
 
 export const STORAGE_KEY = 'webcv-theme';
@@ -21,7 +21,7 @@ export function isTheme(value: unknown): value is Theme {
 }
 
 /** Resolves the theme to apply on first visit: saved choice, else OS dark-mode
- *  preference (Naruto), else the default (Food Wars). Fairy Tail is never
+ *  preference (Naruto), else the default (Food Wars). Free! is never
  *  auto-selected — it's always an explicit opt-in via the slider (SPEC §7.1). */
 export function getInitialTheme(): Theme {
   const saved = typeof localStorage !== 'undefined' ? localStorage.getItem(STORAGE_KEY) : null;

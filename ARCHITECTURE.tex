@@ -444,7 +444,7 @@ or merged into something else)?
   One place to define \emph{how} something looks by role; every theme
   file (below) supplies the actual color \emph{values} for those same
   role names --- see \S\ref{sec:theming}. \\[6pt]
-\file{src/styles/themes/\{foodwars,naruto,fairytail\}.css} &
+\file{src/styles/themes/\{foodwars,naruto,free\}.css} &
   One CSS custom-property set per theme, scoped under
   \texttt{:root[data-theme='\ldots']}. &
   Adding a fourth theme later means adding one more file with the same
@@ -641,7 +641,7 @@ the content model (\S\ref{sec:contentmodel}).
 \textbf{The requirement} (\texttt{SPEC.md} \S7): not a light/dark toggle,
 but three named, switchable themes --- Food Wars (default, light), Naruto
 (repurposed as the dark mode, since its palette already reads as a night
-aesthetic), Fairy Tail (an alternate) --- controlled by one slider that
+aesthetic), Free! (an alternate, aquatic-toned) --- controlled by one slider that
 lives in the nav and applies to the whole site instantly, with the choice
 remembered across reloads and page navigation.
 
@@ -649,10 +649,10 @@ remembered across reloads and page navigation.
 original site had one palette with a \texttt{prefers-color-scheme: dark}
 override --- two states. Extending that to \emph{three arbitrary named
 states} means the states can no longer be selected by a media query
-(there's no ``prefers-fairy-tail'' signal from the OS) --- they need an
+(there's no ``prefers-free'' signal from the OS) --- they need an
 explicit switch. The mechanism is a \texttt{data-theme} HTML attribute on
 \texttt{<html>}, and one CSS file per theme
-(\texttt{src/styles/themes/\{foodwars,naruto,fairytail\}.css}), each
+(\texttt{src/styles/themes/\{foodwars,naruto,free\}.css}), each
 scoping the exact same token names under a different attribute selector:
 
 \begin{lstlisting}
@@ -660,8 +660,8 @@ scoping the exact same token names under a different attribute selector:
 :root, :root[data-theme='foodwars'] { --color-bg: #fff9f0; --color-accent: #e8283f; }
 /* naruto.css */
 :root[data-theme='naruto']          { --color-bg: #1b1f2a; --color-accent: #e8611c; }
-/* fairytail.css */
-:root[data-theme='fairytail']       { --color-bg: #241b3a; --color-accent: #ff6b4a; }
+/* free.css */
+:root[data-theme='free']            { --color-bg: #eafcff; --color-accent: #007a94; }
 \end{lstlisting}
 
 \texttt{global.css} still never hardcodes a color --- it just references
@@ -699,7 +699,7 @@ original design-token system, just scaled from ``one override block'' to
 
 \textbf{Avoiding a flash of the wrong theme on load:} the saved theme has
 to be applied \emph{before} the browser's first paint, or a returning
-visitor who picked Fairy Tail would see a flash of Food Wars (the CSS
+visitor who picked Free! would see a flash of Food Wars (the CSS
 default) before JavaScript corrects it. The fix is a classic
 \textbf{blocking, non-module \texttt{<script>}}, placed as the very first
 thing in \texttt{<head>} in \texttt{Layout.astro}:
@@ -738,9 +738,9 @@ sizes so text scales smoothly instead of jumping at breakpoints.
 
 The Experience page connects entries with a themed visual motif instead
 of a plain line: a gnarled tree trunk (Naruto), a melted-butter ribbon
-(Food Wars), or a chain of elemental magic orbs (Fairy Tail) ---
+(Food Wars), or a rippling current with bubble nodes (Free!) ---
 \texttt{SPEC.md} \S4. Each is its own self-contained component
-(\texttt{src/components/connectors/\{Tree,Butter,Magic\}Connector.astro})
+(\texttt{src/components/connectors/\{Tree,Butter,Water\}Connector.astro})
 that renders the full thing: the spine SVG, every entry's branch
 artwork, \emph{and} the \texttt{ExperienceCard}s themselves, looped from
 the same \texttt{getExperience()} data as any other page.
@@ -748,7 +748,7 @@ the same \texttt{getExperience()} data as any other page.
 \texttt{global.css} shows only the one matching the active theme:
 
 \begin{lstlisting}
-.tree--foodwars, .tree--naruto, .tree--fairytail { display: none; }
+.tree--foodwars, .tree--naruto, .tree--free { display: none; }
 :root[data-theme='naruto'] .tree--naruto { display: block; }
 \end{lstlisting}
 
@@ -788,7 +788,7 @@ just the general ``components read tokens, tokens change with
 alternative --- drawing three differently-colored mascots per activity ---
 would have meant hand-authoring 18 sprites instead of 6.
 \texttt{ExtracurricularsBackground.astro} (the faint steam-wisp/
-leaf-spiral/magic-circle decoration behind the section) uses the
+leaf-spiral/splash-ripple decoration behind the section) uses the
 identical show-one-hide-two-by-\texttt{data-theme} technique as the
 Experience connectors (\S\ref{sec:connectors}), for the same reason.
 

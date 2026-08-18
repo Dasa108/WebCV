@@ -24,7 +24,7 @@ and how to reach you.**
 - **Data-driven** Experience/Projects pages — new entries append to a YAML
   file, no markup changes (§5).
 - **Three switchable visual themes** — Food Wars (default), Naruto (dark
-  mode), Fairy Tail (alternate) — see §7.
+  mode), Free! (alternate) — see §7.
 - Mobile + desktop layouts, always-visible contact info (email minimum).
 
 **Out of scope**
@@ -48,7 +48,7 @@ truth, not re-typed from memory.
 
 **Nav (all pages):** `Home · About · Experience · Projects · Contact`, plus
 a **theme switcher rendered as a 3-point slider** (Food Wars — Naruto —
-Fairy Tail, left to right) in the nav on every page — one shared, global
+Free!, left to right) in the nav on every page — one shared, global
 control, not a per-page setting. Dragging or clicking a stop re-themes the
 entire current page instantly and the choice carries to every other page
 on navigation. Current nav page and current theme are both indicated via
@@ -61,15 +61,13 @@ the active theme's accent; logo/name links Home.
   grouped by category, **extracurriculars with themed background
   elements** (§7.6), repeat CTA.
 
-**Contact & social links** — email is the required minimum; GitHub
-(https://github.com/Dasa108) and LinkedIn
-(https://www.linkedin.com/in/sudarshana-chaitanya-b-n-935167319) are shown
-alongside it, not buried in a single icon-only row:
+**Contact & social links** — email is the required minimum; GitHub and
+LinkedIn are shown alongside it, not buried in a single icon-only row:
 - **Footer**, every page — plain text links, always visible regardless of
   scroll position.
-- **Contact section**, Home and About — next to the email line and as
-  `.btn-secondary` buttons in the CTA row (`Contact me` / `Download CV` /
-  `GitHub` / `LinkedIn`).
+- **Contact section**, Home and About — as `.btn-secondary` buttons in the
+  CTA row, next to `Contact me` / `Download CV` (bubbles, not a separate
+  text line — the buttons alone are enough).
 All three (email/GitHub/LinkedIn) are defined once in `src/lib/site.ts` and
 imported everywhere they're used, so there's a single place to update if
 any of them change.
@@ -84,10 +82,10 @@ any of them change.
     in place of the trunk — a warm golden ribbon with soft highlight/sheen
     gradients and small pooling "drips" at each entry, alternating
     left/right the same way the trunk's branches did.
-  - **Fairy Tail:** a chain of abstract elemental magic circles/orbs (fire,
-    water, ice, lightning) connecting entries, linked by a thin glowing
-    line — each entry's orb colored by its element, no guild emblem or
-    character silhouettes.
+  - **Free!:** a rippling current line connecting entries instead of a
+    trunk or ribbon — each entry's node is a small glossy bubble that
+    cycles through four water tones (shallow/current/deep, plus one warm
+    "lane-flag" pop), no swim caps, team colors, or character silhouettes.
   All three collapse to a single-side layout below 768px (§6).
 - **Projects (`/projects`)** — card grid (title, one-line summary, tech
   tags, links, outcome line); optional "featured" flag using the active
@@ -129,7 +127,7 @@ appending an entry to `content/experience.yaml` or `content/projects.yaml`.
   ≤480px, 481–768px, 769–1024px, ≥1025px — no horizontal scroll, tap
   targets ≥44px.
 - **Performance:** Lighthouse ≥90 (mobile + desktop), compressed images, no
-  heavy frameworks. Theme assets (butter-stream/magic-circle SVGs) should
+  heavy frameworks. Theme assets (butter-stream/ripple-current SVGs) should
   be lightweight inline SVG, not large raster images, to keep this intact
   across all three themes.
 - **Accessibility:** semantic HTML, WCAG AA contrast **in all three
@@ -143,18 +141,19 @@ appending an entry to `content/experience.yaml` or `content/projects.yaml`.
 Clean, professional, generous whitespace — content carries the page. Anime
 influence lives entirely in palette, the Experience-page connector motif,
 and light extracurriculars decoration (§7.6) — never in character art,
-jutsu graphics, guild emblems, or knife/fire iconography used literally.
+jutsu graphics, guild emblems, knife/fire iconography, or swim-cap/team
+iconography used literally.
 
 ### 7.1 Theme system
 
 The site ships **three selectable themes**, not just a light/dark toggle:
 **Food Wars** (default, light), **Naruto** (dark mode — its palette already
 reads as a night/dark aesthetic, so it's repurposed as the dark-mode
-option rather than sitting alongside light mode), and **Fairy Tail**
-(alternate, magic-toned).
+option rather than sitting alongside light mode), and **Free!**
+(alternate, water/aquatic-toned).
 
 **Control:** a single **3-point slider** in the nav — three fixed stops,
-Food Wars / Naruto / Fairy Tail left to right — not a dropdown or a pair of
+Food Wars / Naruto / Free! left to right — not a dropdown or a pair of
 toggle buttons. It's a **global, site-wide** control: it lives in the
 shared `Nav.astro`, so it renders identically on Home/About/Experience/
 Projects, and one choice governs the whole site at once rather than being
@@ -164,7 +163,7 @@ set per page.
 `data-theme` attribute on `<html>`, driven by the slider's position;
 choice persists to `localStorage` and is re-applied on every page load so
 navigating between pages never resets it. `prefers-color-scheme` can set
-the initial Food Wars/Naruto stop on first visit; Fairy Tail is always an
+the initial Food Wars/Naruto stop on first visit; Free! is always an
 explicit opt-in via the slider. The slider itself must be reachable by
 keyboard (arrow keys move between the three stops) and announce the
 selected theme to screen readers. Shared spacing/type scale/card/button
@@ -204,23 +203,24 @@ reserved for the sparing "featured" flag.
 Orange remains the single dominant accent; blue is reserved for small
 highlights/focus states so it doesn't compete with orange.
 
-### 7.4 Fairy Tail theme (alternate)
+### 7.4 Free! theme (alternate)
 
 | Role | Color | Hex |
 |---|---|---|
-| Background | Guildhall Indigo | `#241B3A` |
-| Primary accent (CTAs, links, active nav) | Dragon-Flame Coral | `#FF6B4A` |
-| Primary accent — hover/active | Deep Ember | `#D9502F` |
-| Secondary accent (tags, badges, focus rings) | Celestial Gold | `#FFD166` |
-| Rare highlight ("featured" flags) | Titania Scarlet | `#D7263D` |
-| Elemental accent set (Experience-page orbs only, §4) | Fire `#FF6B4A` · Water `#3FA7D6` · Ice `#8FE3FF` · Lightning `#F5E663` |
-| Surface (cards/panels) | `#2E2350` |
-| Body text | Pale Lavender `#EDE7F6` |
+| Background | Pool Surface | `#EAFCFF` |
+| Primary accent (CTAs, links, active nav) | Splash Cyan | `#007A94` |
+| Primary accent — hover/active | Deep Current | `#005A70` |
+| Secondary accent (tags, badges, focus rings) | Poolside Amber | `#E8952F` |
+| Rare highlight ("featured" flags) | Lifebuoy Red | `#C0273A` |
+| Water-tone accent set (Experience-page bubbles only, §4) | Shallow `#26C6DA` · Current `#007A94` · Deep `#023E5C` · Flag `#FF6F3C` |
+| Surface (cards/panels) | `#FFFFFF` |
+| Body text | Deep Water Navy `#0B2A3A` |
 
-Coral is the dominant accent (buttons/links); gold and scarlet stay rare
-accents exactly as in the other two themes. The elemental set is scoped
-only to the Experience-page connector orbs (§4) — it doesn't leak into
-buttons or body UI, keeping "one dominant accent" true in every theme.
+Splash Cyan is the dominant accent (buttons/links) — 4.7:1 against Pool
+Surface, clears AA on its own; amber and red stay rare accents exactly as
+in the other two themes. The water-tone set is scoped only to the
+Experience-page connector bubbles (§4) — it doesn't leak into buttons or
+body UI, keeping "one dominant accent" true in every theme.
 
 ### 7.5 Cross-theme consistency
 
@@ -253,14 +253,14 @@ weight, plus a light theme-matched decorative background:
 - **Theme recoloring, not redesign:** the same mascot roster is recolored
   per active theme using that theme's palette (§7.2–7.4) — Food Wars
   theme tints mascots warm crimson/gold, Naruto theme tints them navy/
-  orange, Fairy Tail tints them indigo/coral — so switching the slider
-  restyles the whole extracurriculars page including its mascots, without
-  swapping in different character designs per theme.
+  orange, Free! tints them cyan/amber — so switching the slider restyles
+  the whole extracurriculars page including its mascots, without swapping
+  in different character designs per theme.
 - **Background:** a faint theme-matched decorative layer behind the
   section — steam-wisp/plating-splatter shapes (Food Wars), leaf
-  silhouettes + a chakra-spiral watermark (Naruto), or magic-circle rings
-  + elemental sparkle particles (Fairy Tail) — kept abstract/geometric,
-  no logos or emblems.
+  silhouettes + a chakra-spiral watermark (Naruto), or splash-ripple rings
+  + a rising bubble trail (Free!) — kept abstract/geometric, no logos or
+  emblems.
 
 All mascots share one pixel-art grid/sprite size/outline weight so the
 roster reads as one consistent system across entries and across themes.
@@ -287,8 +287,8 @@ existing character redrawn smaller.
 9. The 3-point theme slider is present and in sync on every page, moves
    correctly between all three stops (click, drag, and arrow-key), re-
    themes the whole page including the Experience-page connector motif
-   (tree / butter stream / magic orbs), and persists the choice across a
-   reload and across navigation.
+   (tree / butter stream / rippling current), and persists the choice
+   across a reload and across navigation.
 
 **Done** = all nine criteria pass on a live deployed URL, not just
 localhost.
@@ -303,7 +303,7 @@ slider component (`ThemeSwitcher.astro`) living in `Nav.astro` so it's
 present, in sync, and reachable identically on every page; choice
 persisted to `localStorage` and re-read on each page load. The Experience
 page's connector renders as inline SVG and reads the same `data-theme`
-attribute to pick tree / butter-stream / magic-orb markup. **Deployment:
+attribute to pick tree / butter-stream / rippling-current markup. **Deployment:
 GitHub Pages** via `.github/workflows/deploy.yml`
 (`actions/deploy-pages`, triggered on push to `main`).
 
@@ -331,10 +331,10 @@ WebCV/
     │   ├── Layout.astro · Nav.astro · Footer.astro · ThemeSwitcher.astro
     │   ├── ExperienceCard.astro · ProjectCard.astro
     │   └── connectors/ (TreeConnector.astro · ButterConnector.astro ·
-    │       MagicConnector.astro)
+    │       WaterConnector.astro)
     └── styles/
         ├── global.css              # shared layout/type/spacing
-        └── themes/ (foodwars.css · naruto.css · fairytail.css)
+        └── themes/ (foodwars.css · naruto.css · free.css)
 ```
 
 ## 11. Milestones
@@ -345,8 +345,8 @@ WebCV/
    driven card templates, mobile-first, placeholder styling.
 3. **M3** — Apply the three theme palettes (§7.2–7.4), build the
    ThemeSwitcher and per-theme Experience connectors (tree / butter stream
-   / magic orbs), add extracurriculars background elements (§7.6), add
-   photo/thumbnails.
+   / rippling current), add extracurriculars background elements (§7.6),
+   add photo/thumbnails.
 4. **M4** — QA breakpoints, accessibility, and performance **across all
    three themes**; dry-run the extensibility criterion (§8, #8) and the
    theme-persistence criterion (§8, #9).

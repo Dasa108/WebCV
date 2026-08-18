@@ -1,0 +1,57 @@
+---
+// Free! Experience connector — SPEC.md §4. A rippling current line running
+// down the page in place of the trunk/ribbon, with each entry's branch
+// ending in a small glossy bubble instead of a plain node dot. The bubble
+// color cycles through four water tones (shallow/current/deep/one warm
+// "lane-flag" pop) the same way Fairy Tail's orbs used to cycle elements —
+// entirely abstract shapes, no swim caps/lane-flag team imagery, no
+// character silhouettes (§7 guardrail).
+import ExperienceCard from '../ExperienceCard.astro';
+import type { ExperienceEntry } from '../../lib/content';
+
+interface Props {
+  experience: ExperienceEntry[];
+}
+const { experience } = Astro.props;
+
+// Center line: a proper ripple/zigzag (not a gentle single S-curve like the
+// old magic-line) — reads as a current running down the page. Drawn three
+// times with increasing width/decreasing opacity behind the crisp core
+// line to fake a soft glow, same trick the other connectors use.
+const linePath =
+  'M50,0 C60,55 40,105 50,165 C60,225 40,275 50,335 C60,395 40,445 50,505 ' +
+  'C60,565 40,615 50,675 C60,735 40,785 50,845 C60,905 40,955 50,1000';
+
+// Same reusable branch curve as the other two connectors.
+const branchPath = 'M2,20 C14,8 24,32 46,17';
+
+const tones = ['shallow', 'current', 'deep', 'flag'] as const;
+---
+
+<div class="tree tree--free">
+  <div class="tree-trunk" aria-hidden="true">
+    <svg viewBox="0 0 100 1000" preserveAspectRatio="none">
+      <path d={linePath} stroke="var(--color-connector-primary)" stroke-width="10" fill="none" opacity="0.15" />
+      <path d={linePath} stroke="var(--color-connector-primary)" stroke-width="5" fill="none" opacity="0.3" />
+      <path d={linePath} stroke="var(--color-connector-primary)" stroke-width="1.5" fill="none" opacity="0.9" />
+    </svg>
+  </div>
+  {
+    experience.map((entry, i) => {
+      const bubbleVar = `var(--wave-${tones[i % tones.length]})`;
+      return (
+        <div class={`tree-item ${i % 2 === 0 ? 'tree-item--right' : 'tree-item--left'}`}>
+          <div class="tree-branch" aria-hidden="true">
+            <span class="tree-node tree-node--bubble" style={`--orb-color: ${bubbleVar}`} />
+            <svg viewBox="0 0 48 40" preserveAspectRatio="none">
+              <path d={branchPath} stroke={bubbleVar} stroke-width="2.5" fill="none" stroke-linecap="round" opacity="0.8" />
+              <circle cx="4" cy="20" r="6" fill={bubbleVar} opacity="0.85" />
+              <circle cx="2.3" cy="17.5" r="1.7" fill="var(--color-on-accent)" opacity="0.6" />
+            </svg>
+          </div>
+          <ExperienceCard entry={entry} />
+        </div>
+      );
+    })
+  }
+</div>

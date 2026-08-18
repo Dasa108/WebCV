@@ -2,7 +2,7 @@
 import Layout from '../components/Layout.astro';
 import TreeConnector from '../components/connectors/TreeConnector.astro';
 import ButterConnector from '../components/connectors/ButterConnector.astro';
-import MagicConnector from '../components/connectors/MagicConnector.astro';
+import WaterConnector from '../components/connectors/WaterConnector.astro';
 import { getExperience } from '../lib/content';
 
 const experience = getExperience();
@@ -27,7 +27,7 @@ const experience = getExperience();
     <div style="margin-top: var(--space-3);">
       <TreeConnector experience={experience} />
       <ButterConnector experience={experience} />
-      <MagicConnector experience={experience} />
+      <WaterConnector experience={experience} />
     </div>
   </section>
 </Layout>

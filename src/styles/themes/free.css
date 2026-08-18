@@ -1,0 +1,45 @@
+/* ============================================================================
+   Free! — alternate, aquatic-toned theme. SPEC.md §7.4. Swapped in for the
+   old Fairy Tail theme at the user's request: same slot in the slider
+   (3rd stop), same "explicit opt-in only" rule (§7.1), new palette.
+
+   --color-on-accent-2 / --color-on-accent-rare: same pattern as the other
+   two theme files — Poolside Amber/Lifebuoy Red are fine as solid fills
+   but fail WCAG AA as small text on this theme's background, so the
+   shared .badge component gets a computed per-fill on-color instead of
+   tinted-bg + colored-text (verified below, not assumed from name alone).
+   ========================================================================= */
+:root[data-theme='free'] {
+  --color-bg: #eafcff; /* Pool Surface */
+  --color-surface: #ffffff;
+  --color-text: #0b2a3a; /* Deep Water Navy */
+  --color-text-muted: #4d6b78;
+  --color-border: #cdeaf0;
+
+  --color-accent: #007a94; /* Splash Cyan — 4.7:1 on Pool Surface, AA */
+  --color-accent-hover: #005a70; /* Deep Current */
+  --color-accent-2: #e8952f; /* Poolside Amber */
+  --color-accent-rare: #c0273a; /* Lifebuoy Red */
+  --color-on-accent: #f2fdff;
+  --color-on-accent-2: #0b2a3a; /* ink clears 4.5:1 on Poolside Amber; white doesn't */
+  --color-on-accent-rare: #f2fdff; /* white clears 4.5:1 on Lifebuoy Red; ink doesn't */
+  --color-steel: #6fa8b8;
+
+  --shadow: 0 1px 3px rgba(4, 60, 80, 0.12), 0 1px 2px rgba(4, 60, 80, 0.08);
+  --shadow-hover: 0 8px 24px rgba(4, 60, 80, 0.16);
+
+  /* Experience connector (§4): a rippling current line with bubble nodes —
+     scoped to the connector only, same as the other themes' motif tokens */
+  --color-connector-primary: #a7dfe8; /* soft ripple line */
+  --wave-shallow: #26c6da;
+  --wave-current: #007a94;
+  --wave-deep: #023e5c;
+  --wave-flag: #ff6f3c; /* lane-flag orange — one warm tone in the cycle */
+
+  /* Extracurriculars mascots + background (§7.6) */
+  --mascot-primary: #007a94;
+  --mascot-secondary: #e8952f;
+  --mascot-skin: #eeae7f;
+  --mascot-outline: #0b2a3a;
+  --bg-decoration: #e8952f;
+}

@@ -203,14 +203,14 @@ WebCV/
     ├── styles/
     │   ├── global.css              # shared layout/type/spacing/card tokens (§6.4)
     │   └── themes/                 # one CSS custom-property set per theme (§6.4)
-    │       ├── foodwars.css, naruto.css, fairytail.css
+    │       ├── foodwars.css, naruto.css, free.css
     ├── components/                # reusable page pieces (§6.2)
     │   ├── Layout.astro, Nav.astro, Footer.astro
     │   ├── ExperienceCard.astro, ProjectCard.astro
     │   ├── ThemeSwitcher.astro     # the global 3-point theme slider (§6.4)
     │   ├── PixelMascot.astro, ExtracurricularsBackground.astro   (§6.6)
     │   └── connectors/             # one Experience-page connector per theme (§6.5)
-    │       ├── TreeConnector.astro, ButterConnector.astro, MagicConnector.astro
+    │       ├── TreeConnector.astro, ButterConnector.astro, WaterConnector.astro
     └── pages/                      # ← one file = one route (§6.3)
         ├── index.astro             # "/"
         ├── about.astro             # "/about"
@@ -350,7 +350,7 @@ This is the second-most-important design decision in the project (after
 **The requirement** (`SPEC.md` §7): not a light/dark toggle, but three
 named, switchable themes — Food Wars (default, light), Naruto (repurposed
 as the dark mode, since its palette already reads as a night aesthetic),
-Fairy Tail (an alternate) — controlled by one slider that lives in the nav
+Free! (an alternate, aquatic-toned) — controlled by one slider that lives in the nav
 and applies to the whole site instantly, with the choice remembered
 across reloads and page navigation.
 
@@ -358,11 +358,11 @@ across reloads and page navigation.
 original site had one palette with a `prefers-color-scheme: dark`
 override — two states. Extending that to *three arbitrary named states*
 means the states can no longer be selected by a media query (there's no
-"prefers-fairy-tail" signal from the OS) — they need an explicit switch.
+"prefers-free" signal from the OS) — they need an explicit switch.
 The mechanism is a
 **[`data-theme` HTML attribute](https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes/data-*)**
 on `<html>`, and one CSS file per theme
-(`src/styles/themes/{foodwars,naruto,fairytail}.css`), each scoping the
+(`src/styles/themes/{foodwars,naruto,free}.css`), each scoping the
 exact same token names under a different
 **[attribute selector](https://developer.mozilla.org/en-US/docs/Web/CSS/Attribute_selectors)**:
 
@@ -371,8 +371,8 @@ exact same token names under a different
 :root, :root[data-theme='foodwars'] { --color-bg: #fff9f0; --color-accent: #e8283f; /* … */ }
 /* naruto.css */
 :root[data-theme='naruto']          { --color-bg: #1b1f2a; --color-accent: #e8611c; /* … */ }
-/* fairytail.css */
-:root[data-theme='fairytail']       { --color-bg: #241b3a; --color-accent: #ff6b4a; /* … */ }
+/* free.css */
+:root[data-theme='free']            { --color-bg: #eafcff; --color-accent: #007a94; /* … */ }
 ```
 
 `global.css` still never hardcodes a color — it just references
@@ -410,7 +410,7 @@ override block" to "three swappable stylesheets."
 
 **Avoiding a flash of the wrong theme on load:** the saved theme has to
 be applied *before* the browser's first paint, or a returning visitor who
-picked Fairy Tail would see a flash of Food Wars (the CSS default) before
+picked Free! would see a flash of Food Wars (the CSS default) before
 JavaScript corrects it. The fix is a classic
 **blocking, non-module `<script>`**, placed as the very first thing in
 `<head>` in `Layout.astro`:
@@ -454,9 +454,9 @@ called [responsive web design](https://developer.mozilla.org/en-US/docs/Learn_we
 
 The Experience page connects entries with a themed visual motif instead
 of a plain line: a gnarled tree trunk (Naruto), a melted-butter ribbon
-(Food Wars), or a chain of elemental magic orbs (Fairy Tail) — see
+(Food Wars), or a rippling current with bubble nodes (Free!) — see
 `SPEC.md` §4. Each is its own self-contained component
-(`src/components/connectors/{Tree,Butter,Magic}Connector.astro`) that
+(`src/components/connectors/{Tree,Butter,Water}Connector.astro`) that
 renders the full thing: the spine SVG, every entry's branch artwork, *and*
 the `ExperienceCard`s themselves, looped from the same `getExperience()`
 data as any other page.
@@ -466,13 +466,13 @@ data as any other page.
 ```astro
 <TreeConnector experience={experience} />
 <ButterConnector experience={experience} />
-<MagicConnector experience={experience} />
+<WaterConnector experience={experience} />
 ```
 
 ...and `global.css` shows only the one matching the active theme:
 
 ```css
-.tree--foodwars, .tree--naruto, .tree--fairytail { display: none; }
+.tree--foodwars, .tree--naruto, .tree--free { display: none; }
 :root[data-theme='naruto'] .tree--naruto { display: block; }
 ```
 
@@ -510,7 +510,7 @@ three differently-colored (or differently-posed) mascots per activity —
 would have meant hand-authoring 18 sprites instead of 6; recoloring via
 tokens keeps it to 6 no matter how many themes exist.
 `ExtracurricularsBackground.astro` (the faint steam-wisp/leaf-spiral/
-magic-circle decoration behind the section) uses the identical
+splash-ripple decoration behind the section) uses the identical
 show-one-hide-two-by-`data-theme` technique as the Experience connectors
 (§6.5), for the same reason.
 

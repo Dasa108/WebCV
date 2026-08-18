@@ -142,6 +142,13 @@ and a project detail page with HTTP 200.
 
 ## 6. Theme system (added 2026-08-17, SPEC.md §7)
 
+> **Update 2026-08-18:** the third theme was swapped from Fairy Tail to
+> **Free!** (water/aquatic-toned) per user request — same slot in the
+> slider, same "explicit opt-in only" rule, new palette + connector motif.
+> `fairytail.css` → `free.css`, `MagicConnector.astro` → `WaterConnector.astro`,
+> theme key `'fairytail'` → `'free'`. The section below is left as written
+> at the time for history; see §9 for what actually changed in the swap.
+
 The single static palette was replaced with three switchable themes — Food
 Wars (default), Naruto (dark mode), Fairy Tail — per the SPEC rewrite.
 What changed, concretely:
@@ -197,16 +204,48 @@ note that was sitting inline in SPEC.md §4.
 - `Footer.astro` — GitHub + LinkedIn added to the link list, so they're
   visible on every page regardless of scroll position.
 - Home (`/`) and About (`/about`) Contact/CTA sections — GitHub/LinkedIn
-  added as `.btn-secondary` buttons next to `Contact me`/`Download CV`;
-  Home's Contact section also gets a plain-text line next to the email
-  address.
+  added as `.btn-secondary` buttons next to `Contact me`/`Download CV`.
+  (Home's Contact section briefly also had a plain-text line next to the
+  email address; removed same day at the user's request — the buttons
+  alone are enough, no separate text row.)
 
-Verified: `npm run build` (0 errors, 6 pages) + grepped the built HTML —
-3 GitHub/LinkedIn links per page where a Contact section exists (Home),
-2 where only the footer + CTA button do (About), 1 (footer only) on
-Experience/Projects.
+Verified: `npm run build` (0 errors, 6 pages) + grepped the built HTML for
+the GitHub/LinkedIn link counts on each page.
 
-## 8. Open TODOs
+## 8. Theme swap: Fairy Tail → Free! (2026-08-18, SPEC.md §7.4)
+
+Replaced the third theme (Fairy Tail) with **Free!** (the swimming anime)
+at the user's request — "more waterish cyan colors." Same slot in the
+3-point slider, same rules (never auto-selected, explicit opt-in only),
+new palette + connector motif + background decoration. What changed:
+
+- `src/styles/themes/free.css` (was `fairytail.css`) — Pool Surface bg
+  `#EAFCFF`, Splash Cyan accent `#007A94` (4.7:1 against bg, verified with
+  a WCAG contrast calc before picking the hex, not assumed from the name),
+  Poolside Amber secondary, Lifebuoy Red rare highlight. `--elem-*` tokens
+  (fire/water/ice/lightning) replaced with `--wave-*` (shallow/current/
+  deep/flag).
+- `src/components/connectors/WaterConnector.astro` (was
+  `MagicConnector.astro`) — the Experience-page motif is now a rippling
+  current line (zigzag path, not the old gentle S-curve) with glossy
+  bubble nodes cycling through the four `--wave-*` tones instead of
+  elemental orbs. `.tree-node--orb` renamed to `.tree-node--bubble` in
+  `global.css` to match.
+- `ExtracurricularsBackground.astro` — the magic-circle-rings +
+  sparkle-particle decoration became splash-ripple rings + a rising
+  bubble trail + a soft waterline.
+- `src/lib/theme.ts` — theme key `'fairytail'` → `'free'`, label `'Fairy
+  Tail'` → `'Free!'`. `PixelMascot.astro` needed no changes — it's already
+  fully token-driven (`--mascot-*`), so it recolors for free.
+
+Verified: `npm run build` (0 errors, 6 pages); rasterized the new palette
+swatch and the wave-connector shape with ImageMagick before wiring them in
+(no real browser available in this session — same fallback as the original
+theme-system session) — confirmed the palette reads as a clear cyan/water
+scheme and the connector reads as a rippling current with 4 distinct
+bubble tones, not a broken path or solid blob.
+
+## 9. Open TODOs
 
 **Done:**
 - [x] `astro.config.mjs` — `site: 'https://Dasa108.github.io'`,
@@ -225,6 +264,12 @@ Experience/Projects.
       fine for now, but run `git config --global user.email you@example.com`
       (and `user.name`) if you want commits attributed differently going
       forward.
+- [ ] `ARCHITECTURE.pdf` is now stale (out of sync with `.md`/`.tex`) after
+      the §8 Fairy Tail → Free! rename — this sandbox has no LaTeX
+      toolchain (`pdflatex`/`xelatex`/`lualatex` all missing), so the PDF
+      couldn't be regenerated. `.md` and `.tex` sources are both updated;
+      run `pdflatex ARCHITECTURE.tex` (or equivalent) wherever LaTeX is
+      available to refresh the PDF.
 
 **Local dev environment note:** this machine had no Node.js; it was
 installed via `nvm` (`~/.nvm`) to build/verify the site. Run
