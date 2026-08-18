@@ -4,7 +4,7 @@
 |---|---|
 | **Status** | Draft |
 | **Owner** | asaiyan195@gmail.com |
-| **Last updated** | 2026-08-17 |
+| **Last updated** | 2026-08-18 |
 
 ## 1. Overview & Goal
 
@@ -38,7 +38,7 @@ and how to reach you.**
 | CV | About page, education, skills, contact |
 | Project report | Projects page — one entry per project |
 | Internship report | Experience page — one entry under "work experience" |
-| Extracurriculars | "Beyond work" section on About, with per-theme
+| Extracurriculars | "Extracurriculars" section on About, with per-theme
   decorative background elements (§7.6) |
 
 Gather all four into `content/` before content freeze — single source of
@@ -54,7 +54,7 @@ entire current page instantly and the choice carries to every other page
 on navigation. Current nav page and current theme are both indicated via
 the active theme's accent; logo/name links Home.
 
-- **Home (`/`)** — hero (name, tagline, "Contact me" + "Download CV" CTAs) →
+- **Home (`/`)** — hero (name, tagline, "Contact me" + "CV" CTAs) →
   About teaser → Highlights strip (2-3 top picks, "See all →") → Contact →
   footer.
 - **About (`/about`)** — full bio (3–5 sentences), education table, skills
@@ -66,8 +66,8 @@ LinkedIn are shown alongside it, not buried in a single icon-only row:
 - **Footer**, every page — plain text links, always visible regardless of
   scroll position.
 - **Contact section**, Home and About — as `.btn-secondary` buttons in the
-  CTA row, next to `Contact me` / `Download CV` (bubbles, not a separate
-  text line — the buttons alone are enough).
+  CTA row, next to `Contact me` / `CV` (bubbles, not a separate text line —
+  the buttons alone are enough).
 All three (email/GitHub/LinkedIn) are defined once in `src/lib/site.ts` and
 imported everywhere they're used, so there's a single place to update if
 any of them change.
@@ -103,19 +103,24 @@ appending an entry to `content/experience.yaml` or `content/projects.yaml`.
 - type: internship        # internship | full-time | part-time | freelance | volunteer
   role: "Software Engineering Intern"
   organization: "Company Name"
+  location: "City, Country"        # optional
   start_date: "2025-06"
   end_date: "2025-08"      # or "Present"
   bullets: ["Quantified impact 1", "Quantified impact 2"]
   tags: ["Python", "PyTorch"]     # optional
+  logo: "images/experience/org-slug.png"  # optional
   link: "https://company.example" # optional
+  project_link: "/projects/slug"  # optional, cross-link to a Projects detail page
+  supervisor: "Name (Affiliation)" # optional, common for research internships
 
 # projects.yaml entry
-- title: "Project Name"
+- slug: "project-slug"    # used for the /projects/<slug> detail route
+  title: "Project Name"
   summary: "One-line description."
   description: "Longer paragraph, optional."
   tech_stack: ["PyTorch", "Flask"]
   outcome: "Short result/impact line."
-  links: { repo: "...", demo: "..." }
+  links: { repo: "...", demo: "...", report: "...", slides: "..." } # each optional
   thumbnail: "images/projects/name.png"  # optional
   featured: false
   date: "2025-11"          # optional, sort order
@@ -321,7 +326,7 @@ WebCV/
 ├── public/
 │   ├── favicon.svg · resume.pdf
 │   ├── documents/
-│   └── images/{experience,projects,mascots}/
+│   └── images/{experience,projects}/    # mascots are inline SVG, no image folder needed
 └── src/
     ├── lib/content.ts
     ├── lib/theme.ts               # theme toggle + localStorage persistence
@@ -330,6 +335,7 @@ WebCV/
     ├── components/
     │   ├── Layout.astro · Nav.astro · Footer.astro · ThemeSwitcher.astro
     │   ├── ExperienceCard.astro · ProjectCard.astro
+    │   ├── PixelMascot.astro · ExtracurricularsBackground.astro   (§7.6)
     │   └── connectors/ (TreeConnector.astro · ButterConnector.astro ·
     │       WaterConnector.astro)
     └── styles/
@@ -355,5 +361,8 @@ WebCV/
 
 ## 12. Open Questions
 
-Still open: the GitHub username in `astro.config.mjs`'s `site` field, and
-the "what I'm currently looking for" line on the About page.
+Both prior open items are resolved: `astro.config.mjs`'s `site` field is
+set (`https://Dasa108.github.io`), and the "what I'm currently looking
+for" line on the About page has real copy, not a placeholder. See
+`PLAN.md` §9 for anything still genuinely open (git identity, the stale
+`ARCHITECTURE.pdf`).
