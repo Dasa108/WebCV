@@ -32,7 +32,7 @@
   title: "VerifyTheVector"
   summary: "A formally verified system for checking claims about SVG graphics, built in Lean 4."
   description: "Checks whether claims made by AI models or humans about an SVG image (shapes, colours, positions, counts, spatial relationships) are true, by parsing the SVG into a strongly typed Lean 4 model and checking each claim as a decidable proposition over exact integer arithmetic — returning PASS, FAIL, or ERROR rather than an approximate judgement."
-  tech_stack: ["Lean 4", "Mathlib", "Python"]
+  tech_stack: ["Lean 4", "Python"]
   outcome: "Built during a research internship at Emergence AI, supervised by Prof. Siddhartha Gadgil (IISc); demonstrates formal, type-driven verification as an alternative to purely statistical/vision-based fact-checking of visual claims."
   links:
     repo: null       # private repo — intentionally no link (per PLAN.md §2)
@@ -50,11 +50,11 @@
   summary: "Studied why adversarial examples transfer asymmetrically across CNN architectures, and evaluated Incremental Adversarial Training with Fisher regularization."
   description: "Analyzed adversarial transferability across five architectures (ResNet18, ResNet34, VGG11, VGG16, DenseNet121) on CIFAR-10 using PGD attacks; found transferability is highly asymmetric (e.g. ResNet→VGG transfers well, the reverse is much weaker), with gradient-norm differences — not gradient direction or parameter count — as the dominant predictor (Pearson r = 0.958). Also explored Incremental Adversarial Training (IncAT) combined with diffusion-based synthetic data: Fisher Information Matrix regularization preserved clean accuracy but over-constrained the parameter flexibility needed for robust decision boundaries, reducing robust accuracy."
   tech_stack: ["PyTorch", "CIFAR-10", "PGD / AutoAttack", "ResNet", "VGG", "DenseNet"]
-  outcome: "Team project (UMC 203, IISc), mentored by Prof. Siddhartha Gadgil; gradient-norm-difference vs. transfer-asymmetry correlation of r = 0.958."
+  outcome: "Team project (UMC 203, IISc); gradient-norm-difference vs. transfer-asymmetry correlation."
   links:
     repo: "https://github.com/KausiganK/Adversarial-Robustness"
     demo: null
-    report: "documents/Adversarial_Robustness.pdf"
+    report: null
     slides: "documents/AIML__Project_Presentation.pdf"
   thumbnail: null    # no thumbnail for now (per PLAN.md §2)
   featured: false
